@@ -1,2 +1,2 @@
 # travxy
-Track how far you have travelled 
+Track how far humans travel
