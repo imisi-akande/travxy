@@ -71,7 +71,7 @@ class Tour(Resource):
         connection = sqlite3.connect('trav_data.db')
         cursor = connection.cursor()
 
-        query = "INSERT INTO tours VALUES (NULL, ?, ?, ?)"
+        query = "INSERT INTO tours VALUES (?, ?, ?)"
         cursor.execute(query, (tour['name'], tour['location'], tour['about']))
         connection.commit()
         connection.close()
@@ -84,12 +84,12 @@ class Tour(Resource):
                 'about': data['about']}
         if tour is None:
             try:
-                self.insert(updated_tour)
+                Tour.insert(updated_tour)
             except:
                 return{"message": "An error occured inserting the tour"}, 500
         else:
             try:
-                self.update(updated_tour)
+                Tour.update(updated_tour)
             except:
                 return{"message": "An error occured updating the tour"}, 500
         return updated_tour
@@ -99,12 +99,12 @@ class Tour(Resource):
         connection = sqlite3.connect('trav_data.db')
         cursor = connection.cursor()
         query = "UPDATE tours SET location=?, about=? WHERE name=?"
-        cursor.execute(query, (tour['name'], tour['location'], tour['about']))
+        cursor.execute(query, (tour['location'], tour['about'], tour['name']))
         connection.commit()
         connection.close()
 
 class TourList(Resource):
-    @jwt_required()
+   # @jwt_required()
     def get(self):
         connection = sqlite3.connect('trav_data.db')
         cursor = connection.cursor()
@@ -113,7 +113,7 @@ class TourList(Resource):
 
         tours = []
         for row in result:
-            tours.append({'name': row[1], 'location': row[2], 'about': row[3]})
+            tours.append({'name': row[0], 'location': row[1], 'about': row[2]})
 
         connection.close()
         return {'tours': tours}

@@ -17,16 +17,16 @@ users = [
 users_query = "INSERT INTO users VALUES(?, ?, ?)"
 
 cursor.executemany(users_query, users)
-tour_table = "CREATE TABLE IF NOT EXISTS tours(id INTEGER PRIMARY KEY, name text, location text, about text)"
+tour_table = "CREATE TABLE IF NOT EXISTS tours(name text PRIMARY KEY, location text, about text)"
 cursor.execute(tour_table)
 tours = [
-    (1, "Shark Bay", "Australia", "Beautiful sharks everywhere"),
-    (2, "Paracas", "Peru", "Funfilled place"),
-    (3, "Algarve", "Portugal", "Sunny microclimate and affordable places to stay"),
-    (4, "Paris", "France", "This city that never sleeps"),
-    (5, "Death Valley", "California", "Vast area of extremes: with snowy peaks, scorching sands")
+    ("Shark Bay", "Australia", "Beautiful sharks everywhere"),
+    ("Paracas", "Peru", "Funfilled place"),
+    ("Algarve", "Portugal", "Sunny microclimate and affordable places to stay"),
+    ("Paris", "France", "This city that never sleeps"),
+    ("Death Valley", "California", "Vast area of extremes: with snowy peaks, scorching sands")
 ]
-tours_query = "INSERT INTO tours VALUES(?,?,?,?)"
+tours_query = "INSERT INTO tours VALUES(?,?,?)"
 cursor.executemany(tours_query, tours)
 select_user_query = "SELECT * FROM users"
 for row in cursor.execute(select_user_query):
