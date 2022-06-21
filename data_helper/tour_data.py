@@ -7,8 +7,8 @@ tours = [
             'location': 'Australia',
             'departure': 'Cameroun',
             'experience': 'The area is diverse',
-            'cost': '$100',
-            'duration': '4hours'
+            'cost': 100,
+            'duration': 24
             }
     },
     {
@@ -19,8 +19,8 @@ tours = [
             'location': 'Peru',
             'departure': 'Saudi Arabia',
             'experience': 'I had fun',
-            'cost': '$200',
-            'duration': '3hours'
+            'cost': 200,
+            'duration': 43
             }
     },
     {   'id': 3,
@@ -30,8 +30,8 @@ tours = [
             'location': 'Portugal',
             'departure': 'South Africa',
             'experience': 'It has its own sunny microclimate and affordable places to stay ',
-            'cost': '$400',
-            'duration': '2weeks'
+            'cost': 400,
+            'duration': 22
             }
     },
     {
@@ -42,8 +42,8 @@ tours = [
             'location': 'France',
             'departure': 'Netherlands',
             'experience': 'This city never sleeps',
-            'cost': '$500',
-            'duration': '5weeks'
+            'cost': 500,
+            'duration': 52
             }
     },
         {
@@ -54,8 +54,8 @@ tours = [
             'location': 'California',
             'departure': 'Ghana',
             'experience': 'vast area of extremes: with snowy peaks, scorching sands',
-            'cost': '$500',
-            'duration': '5weeks'
+            'cost': 500,
+            'duration': 59
             }
     },
     {   'id': 6,
