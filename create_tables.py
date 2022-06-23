@@ -25,7 +25,7 @@ tours = [
     ("Algarve", "Portugal", "Sunny microclimate and affordable places to stay"),
     ("Paris", "France", "This city that never sleeps"),
     ("Death Valley", "California", "Vast area of extremes: with snowy peaks, scorching sands")
-]
+] 
 tours_query = "INSERT INTO tours VALUES(?,?,?)"
 cursor.executemany(tours_query, tours)
 select_user_query = "SELECT * FROM users"

@@ -2,8 +2,8 @@ from flask import Flask
 from datetime import timedelta
 from flask_restful import Api
 from flask_jwt import JWT
-from travxy.user import UserRegister
-from travxy.tour import Tour, TourList
+from travxy.resources.user import UserRegister
+from travxy.resources.tour import Tour, TourList
 
 from travxy.security import authenticate, identity
 app = Flask(__name__)
