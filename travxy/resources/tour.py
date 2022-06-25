@@ -35,37 +35,29 @@ class Tour(Resource):
         data = Tour.parser.parse_args()
         tour = TourModel(name, data['location'], data['about'])
         try:
-            tour.insert()
+            tour.save_to_db()
         except:
             return{'message': 'An error occured while trying to insert the tour'}, 500
         return tour.json(), 201
 
     @jwt_required()
     def delete(self, name):
-        connection = sqlite3.connect('trav_data.db')
-        cursor = connection.cursor()
-        query = "DELETE FROM tours WHERE name=?"
-        cursor.execute(query, (name,))
-        connection.commit()
-        connection.close()
+        tour = TourModel.find_by_name(name)
+        if tour:
+            tour.delete_from_db()
         return{'message': 'Tour deleted succesfully'}, 200
 
     @jwt_required()
     def put(self, name):
         data = Tour.parser.parse_args()
         tour = TourModel.find_by_name(name)
-        updated_tour = TourModel(name, data['location'], data['about'])
         if tour is None:
-            try:
-                updated_tour.insert()
-            except:
-                return{"message": "An error occured inserting the tour"}, 500
+            tour = TourModel(name, data['location'], data['about'])
         else:
-            try:
-                updated_tour.update()
-            except:
-                return{"message": "An error occured updating the tour"}, 500
-        return updated_tour.json()
+           tour.location = data['location']
+           tour.about = data['about']
+        tour.save_to_db()
+        return tour.json()
 
 
 class TourList(Resource):

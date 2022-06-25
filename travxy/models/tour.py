@@ -1,6 +1,12 @@
-import sqlite3
+from db import db
 
-class TourModel:
+class TourModel(db.Model):
+    __tablename__ = 'tours'
+    id = db.Column(db.Integer, primary_key = True)
+    name = db.Column(db.String(80))
+    location = db.Column(db.String(80))
+    about = db.Column(db.String(200))
+
     def __init__(self, name, location, about):
         self.name = name
         self.location = location
@@ -11,30 +17,14 @@ class TourModel:
 
     @classmethod
     def find_by_name(cls, name):
-        connection = sqlite3.connect('trav_data.db')
-        cursor = connection.cursor()
+        return cls.query.filter_by(name=name).first()
 
-        query = "SELECT * FROM tours WHERE name=?"
-        result = cursor.execute(query, (name,))
-        row = result.fetchone()
-        connection.close()
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
 
-        if row:
-            return cls(*row)
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit(self)
 
-    def insert(self):
-        connection = sqlite3.connect('trav_data.db')
-        cursor = connection.cursor()
 
-        query = "INSERT INTO tours VALUES (?, ?, ?)"
-        cursor.execute(query, (self.name, self.location, self.about))
-        connection.commit()
-        connection.close()
-
-    def update(self):
-        connection = sqlite3.connect('trav_data.db')
-        cursor = connection.cursor()
-        query = "UPDATE tours SET location=?, about=? WHERE name=?"
-        cursor.execute(query, (self.location, self.about, self.name))
-        connection.commit()
-        connection.close()
