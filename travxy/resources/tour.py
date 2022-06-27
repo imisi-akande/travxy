@@ -1,4 +1,3 @@
-import sqlite3
 from flask_restful import Resource, reqparse
 from flask_jwt import jwt_required
 from travxy.models.tour import TourModel
@@ -63,15 +62,4 @@ class Tour(Resource):
 class TourList(Resource):
     @jwt_required()
     def get(self):
-        connection = sqlite3.connect('trav_data.db')
-        cursor = connection.cursor()
-        query = "SELECT * FROM tours" 
-        result = cursor.execute(query)
-
-        tours = []
-        for row in result:
-            tours.append({'name': row[0], 'location': row[1], 'about': row[2]})
-            tours.append(row)
-
-        connection.close()
-        return {'tours': tours}
+        return {'tours':[tour.json() for tour in TourModel.query.all()]}

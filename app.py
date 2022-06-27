@@ -7,7 +7,6 @@ from travxy.resources.tour import Tour, TourList
 
 from travxy.security import authenticate, identity
 app = Flask(__name__)
-api = Api(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///trav_data.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -15,6 +14,12 @@ app.config.from_envvar('ENV_FILE_LOCATION')
 app.config['JWT_EXPIRATION_DELTA'] = timedelta(hours=1)
 
 app.config['JWT_AUTH_URL_RULE'] = '/login'
+api = Api(app)
+
+@app.before_first_request
+def create_tables():
+    db.create_all()
+
 jwt = JWT(app, authenticate, identity)
 
 
