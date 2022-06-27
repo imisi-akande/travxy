@@ -18,6 +18,11 @@ class Tour(Resource):
                         type=str, 
                         required=True, 
                         help="This Field cannot be blank")
+    parser.add_argument('category_id',
+                        type=int, 
+                        required=True, 
+                        help="Every tour needs a category id")
+
 
     @jwt_required()
     def get(self, name):
@@ -32,7 +37,7 @@ class Tour(Resource):
             return {"message": "An tour with the name {} already exists".format(name)}, 400
 
         data = Tour.parser.parse_args()
-        tour = TourModel(name, data['location'], data['about'])
+        tour = TourModel(name, **data)
         try:
             tour.save_to_db()
         except:
@@ -51,7 +56,7 @@ class Tour(Resource):
         data = Tour.parser.parse_args()
         tour = TourModel.find_by_name(name)
         if tour is None:
-            tour = TourModel(name, data['location'], data['about'])
+            tour = TourModel(name, **data)
         else:
            tour.location = data['location']
            tour.about = data['about']

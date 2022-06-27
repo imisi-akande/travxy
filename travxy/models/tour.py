@@ -6,11 +6,14 @@ class TourModel(db.Model):
     name = db.Column(db.String(80))
     location = db.Column(db.String(80))
     about = db.Column(db.String(200))
+    category_id = db.Column(db.Integer, db.ForeignKey('categories_id'))
+    category = db.relationship('CategoryModel')
 
-    def __init__(self, name, location, about):
+    def __init__(self, name, location, about, category_id):
         self.name = name
         self.location = location
         self.about = about
+        self.category_id = category_id
 
     def json(self):
         return{'name': self.name, 'location': self.location, 'about': self.about}
