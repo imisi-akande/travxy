@@ -1,6 +1,7 @@
 from flask_restful import Resource, reqparse
+from flask import request
 from flask_jwt import jwt_required
-from travxy.models.tour import TourModel
+from models.tour import TourModel
 
 class Tour(Resource):
     parser = reqparse.RequestParser()
@@ -32,19 +33,6 @@ class Tour(Resource):
         return {'message': 'Tour does not exist'}, 404
 
     @jwt_required()
-    def post(self, name):
-        if TourModel.find_by_name(name):
-            return {"message": "An tour with the name {} already exists".format(name)}, 400
-
-        data = Tour.parser.parse_args()
-        tour = TourModel(name, **data)
-        try:
-            tour.save_to_db()
-        except:
-            return{'message': 'An error occured while trying to insert the tour'}, 500
-        return tour.json(), 201
-
-    @jwt_required()
     def delete(self, name):
         tour = TourModel.find_by_name(name)
         if tour:
@@ -68,3 +56,18 @@ class TourList(Resource):
     @jwt_required()
     def get(self):
         return {'tours':[tour.json() for tour in TourModel.query.all()]}
+
+    @jwt_required()
+    def post(self):
+        data = Tour.parser.parse_args()
+        name = data.get('name')
+        if TourModel.find_by_name(name):
+            return {"message": "An tour with the name {} already exists".format(name)}, 400
+
+        tour = TourModel(**data)
+        try:
+            tour.save_to_db()
+        except:
+            return{'message': 'An error occured while trying to insert the tour'}, 500
+        return tour.json(), 201
+

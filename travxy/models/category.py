@@ -2,15 +2,15 @@ from db import db
 
 class CategoryModel(db.Model):
     __tablename__ = 'categories'
-    id = db.Column(db.Integer, primary_key = True)
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80))
-    tours = db.relationship('TourModel', lazy='dynamic')
+    tours = db.relationship('TourModel', back_populates='category', lazy='dynamic')
 
-    def __init__(self, name, location, about):
+    def __init__(self, name):
         self.name = name
 
     def json(self):
-        return{'name': self.name, 'tours': [tour.json() for tour in self.tours.all()]}
+        return {'id': self.id, 'name': self.name, 'tours': [tour.json() for tour in self.tours.all()]}
 
     @classmethod
     def find_by_name(cls, name):
@@ -22,6 +22,6 @@ class CategoryModel(db.Model):
 
     def delete_from_db(self):
         db.session.delete(self)
-        db.session.commit(self)
+        db.session.commit()
 
 

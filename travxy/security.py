@@ -1,5 +1,5 @@
 from hmac import compare_digest
-from travxy.models.user import UserModel
+from models.user import UserModel
 
 from werkzeug.security import safe_str_cmp
 

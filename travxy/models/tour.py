@@ -2,12 +2,13 @@ from db import db
 
 class TourModel(db.Model):
     __tablename__ = 'tours'
-    id = db.Column(db.Integer, primary_key = True)
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80))
     location = db.Column(db.String(80))
     about = db.Column(db.String(200))
-    category_id = db.Column(db.Integer, db.ForeignKey('categories_id'))
-    category = db.relationship('CategoryModel')
+
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
+    category = db.relationship('CategoryModel', back_populates="tours")
 
     def __init__(self, name, location, about, category_id):
         self.name = name
@@ -28,6 +29,6 @@ class TourModel(db.Model):
 
     def delete_from_db(self):
         db.session.delete(self)
-        db.session.commit(self)
+        db.session.commit()
 
 
