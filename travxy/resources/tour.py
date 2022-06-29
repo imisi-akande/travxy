@@ -1,6 +1,5 @@
 from flask_restful import Resource, reqparse
-from flask import request
-from flask_jwt import jwt_required
+from flask_jwt_extended import jwt_required
 from models.tour import TourModel
 
 class Tour(Resource):
@@ -46,6 +45,7 @@ class Tour(Resource):
         if tour is None:
             tour = TourModel(name, **data)
         else:
+           tour.name = data['name']
            tour.location = data['location']
            tour.about = data['about']
         tour.save_to_db()
