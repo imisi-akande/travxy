@@ -3,4 +3,3 @@ trav_env
 *__pycache__
 trav_data.db
 .env
-config.py
