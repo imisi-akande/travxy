@@ -1,7 +1,7 @@
 from flask_jwt_extended import jwt_required
 from flask_restful import Resource, request
 from flask_jwt_extended import jwt_required
-from models.category import CategoryModel
+from travxy.models.category import CategoryModel
 
 class Category(Resource):
     @jwt_required()

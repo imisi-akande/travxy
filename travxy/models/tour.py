@@ -1,4 +1,4 @@
-from db import db
+from travxy.db import db
 
 class TourModel(db.Model):
     __tablename__ = 'tours'

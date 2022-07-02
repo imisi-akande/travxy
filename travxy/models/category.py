@@ -1,4 +1,4 @@
-from db import db
+from travxy.db import db
 
 class CategoryModel(db.Model):
     __tablename__ = 'categories'

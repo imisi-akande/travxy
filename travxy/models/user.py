@@ -1,4 +1,4 @@
-from db import db
+from travxy.db import db
 
 
 class UserModel(db.Model):

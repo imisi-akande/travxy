@@ -1,16 +1,21 @@
-from os import environ, path
+import configparser
+import os
+#from os import environ, path
 from dotenv import load_dotenv
 
-basedir = path.abspath(path.dirname(__file__))
-load_dotenv(path.join(basedir, '.env'))
+basedir = os.path.abspath(os.path.dirname(__file__))
+load_dotenv(os.path.join(basedir, '.env'))
+print(os.getenv("SQLALCHEMY_DATABASE_URI"), 'are you there')
+
+
 
 class Development(object):
     """Base config."""
     DEBUG = True
     TESTING = False
-    FLASK_ENV = 'development'
-    JWT_SECRET_KEY = environ.get('JWT_SECRET_KEY')
-    SQLALCHEMY_DATABASE_URI = environ.get('SQLALCHEMY_DATABASE_URI')
+    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
+    SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI')
+    FLASK_ENV = os.environ.get("FLASK_ENV")
 
 
 class Production(object):
@@ -19,11 +24,13 @@ class Production(object):
     """
     DEBUG = False
     TESTING = False
-    FLASK_ENV = 'production'
-    SQLALCHEMY_DATABASE_URI = environ.get('SQLALCHEMY_DATABASE_URI')
-    JWT_SECRET_KEY = environ.get('JWT_SECRET_KEY')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URI')
+    JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY')
 
+developing = Development()
 app_config = {
     'development': Development,
     'production': Production,
 }
+print(Development.JWT_SECRET_KEY, 'talk')
+print(app_config['development'], 'show us in config')
