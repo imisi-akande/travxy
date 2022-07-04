@@ -12,9 +12,10 @@ from flask_migrate import Migrate
 from travxy.config import app_config
 migrate = Migrate()
 
-def create_app():
+def create_app(env_name):
     app = Flask(__name__)
-    app.config.from_object(app_config['development'])
+    app.config.from_object(app_config[env_name])
+
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['PROPAGATE_EXCEPTIONS'] = True
     app.config['JWT_EXPIRATION_DELTA'] = timedelta(hours=1)
@@ -22,10 +23,6 @@ def create_app():
     migrate.init_app(app, db)
 
     api = Api(app)
-
-    # @app.before_first_request
-    # def create_tables():
-    #     db.create_all()
 
     jwt = JWTManager(app)
 
@@ -38,8 +35,6 @@ def create_app():
     api.add_resource(UserLogin, '/login')
     api.add_resource(UserList, '/users')
 
-    # db.init_app(app)
-    # if __name__ == "__main__":
-    #     app.run(port=5000, debug=True)
     return app
+
 
