@@ -1,0 +1,19 @@
+category_tuple=[
+    ('Domestic',),
+    ('International',),
+    ('Business',),
+    ('Adventure',),
+    ('Wildlife',),
+    ('Medical',),
+    ('Wellness',),
+    ('Pilgrimage and Spiritual',),
+    ('Cultural',),
+    ('Dark',),
+    ('Culinary',),
+    ('Celibrity',),
+    ('Educational',),
+    ('Cruise',),
+    ('Rural',),
+    ('Beach',),
+    ('Space',)
+]
