@@ -5,6 +5,7 @@ from data_helper.users import user_tuple
 from data_helper.categories import category_tuple
 from data_helper.tours import tour_tuple
 
+
 config = configparser.ConfigParser()
 config.read('./data_helper/database.ini')
 
@@ -27,6 +28,7 @@ insert_user_query = 'insert into users (email, username, password) values %s'
 psycopg2.extras.execute_values(
     user_cursor, insert_user_query, user_tuple, template=None, page_size=100
 )
+
 select_user_query = "SELECT * FROM users"
 user_cursor.execute(select_user_query)
 for row in user_cursor.fetchall():
