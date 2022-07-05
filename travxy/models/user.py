@@ -1,4 +1,5 @@
 from travxy.db import db
+from ..models import bcrypt
 
 
 class UserModel(db.Model):
@@ -12,7 +13,7 @@ class UserModel(db.Model):
     def __init__(self, username, email, password):
         self.username = username
         self.email = email
-        self.password = password
+        self.password = self.__generate_hash(password)
 
     def save_to_db(self):
         db.session.add(self)
@@ -29,6 +30,11 @@ class UserModel(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+    def __generate_hash(self, password):
+        return bcrypt.generate_password_hash(password, rounds=10).decode("utf-8")
+
+    def check_hash(self, password):
+        return bcrypt.check_password_hash(self.password, password)
 
     @classmethod
     def find_by_username(cls, username):

@@ -5,7 +5,7 @@ class TourModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
     location = db.Column(db.String(80), nullable=False)
-    about = db.Column(db.String(200), nullable=False)
+    about = db.Column(db.String(500), nullable=False)
 
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
     category = db.relationship('CategoryModel', back_populates="tours")
