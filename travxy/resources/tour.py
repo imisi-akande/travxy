@@ -1,28 +1,8 @@
-from flask_restful import Resource, reqparse
+from flask_restful import Resource, request
 from flask_jwt_extended import jwt_required
 from travxy.models.tour import TourModel
 
 class Tour(Resource):
-    parser = reqparse.RequestParser()
-    parser.add_argument('name',
-                        type=str, 
-                        required=True, 
-                        help="This Field cannot be blank")
-
-    parser.add_argument('location',
-                        type=str, 
-                        required=True, 
-                        help="This Field cannot be blank")
-
-    parser.add_argument('about',
-                        type=str, 
-                        required=True, 
-                        help="This Field cannot be blank")
-    parser.add_argument('category_id',
-                        type=int, 
-                        required=True, 
-                        help="Every tour needs a category id")
-
 
     @jwt_required()
     def get(self, name):
@@ -40,15 +20,20 @@ class Tour(Resource):
 
     @jwt_required()
     def put(self, name):
-        data = Tour.parser.parse_args()
+        location = request.json.get('location')
+        about = request.json.get('about')
+        category_id = request.json.get('category_id')
+
         tour = TourModel.find_by_name(name)
+
         if tour is None:
-            tour = TourModel(name, **data)
+            tour = TourModel(name, location, about, category_id)
         else:
-           tour.name = data['name']
-           tour.location = data['location']
-           tour.about = data['about']
-        tour.save_to_db()
+           tour.name = name
+           tour.location = location
+           tour.about = about
+           tour.category_id = category_id
+           tour.save_to_db()
         return tour.json()
 
 
@@ -59,12 +44,14 @@ class TourList(Resource):
 
     @jwt_required()
     def post(self):
-        data = Tour.parser.parse_args()
-        name = data.get('name')
+        name = request.json.get('name')
         if TourModel.find_by_name(name):
             return {"message": "An tour with the name {} already exists".format(name)}, 400
 
-        tour = TourModel(**data)
+        location = request.json.get('location')
+        about = request.json.get('about')
+        category_id = request.json.get('category_id')
+        tour = TourModel(name, location, about, category_id)
         try:
             tour.save_to_db()
         except:

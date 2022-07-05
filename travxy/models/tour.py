@@ -17,7 +17,7 @@ class TourModel(db.Model):
         self.category_id = category_id
 
     def json(self):
-        return{'name': self.name, 'location': self.location, 'about': self.about}
+        return{'name': self.name, 'location': self.location, 'about': self.about, 'category_id': self.category_id}
 
     @classmethod
     def find_by_name(cls, name):
