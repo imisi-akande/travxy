@@ -1,6 +1,9 @@
 from flask_restful import Resource, request
+from datetime import timedelta
+
 from travxy.models.user import UserModel
-from flask_jwt_extended import create_access_token, create_refresh_token
+from flask_jwt_extended import (create_access_token, create_refresh_token, 
+                                get_jwt_identity, jwt_required)
 
 class UserRegister(Resource):
 
@@ -42,7 +45,7 @@ class UserLogin(Resource):
         user = UserModel.find_by_email(email)
 
         if user and user.check_hash(password):
-            access_token = create_access_token(identity=user.id, fresh=True)
+            access_token = create_access_token(identity=user.id, fresh=timedelta(minutes=15))
             refresh_token = create_refresh_token(user.id)
             return {
                 'message':'Login suceeded',
@@ -56,3 +59,10 @@ class UserList(Resource):
     def get(self):
         categories = {'users': [user.json() for user in UserModel.query.all()]}
         return categories
+
+class TokenRefresh(Resource):
+    @jwt_required(refresh=True)
+    def post(self):
+        current_user = get_jwt_identity()
+        new_token = create_access_token(identity=current_user, fresh=False)
+        return {'access_token': new_token}, 200
