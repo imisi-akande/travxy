@@ -1,4 +1,4 @@
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import get_jwt_identity, jwt_required, get_jwt_identity
 from flask_restful import Resource, request
 from flask_jwt_extended import jwt_required
 from travxy.models.category import CategoryModel
@@ -11,7 +11,7 @@ class Category(Resource):
             return category.json()
         return {'message': 'Category not found'}, 404
 
-
+    @jwt_required(fresh=True)
     def delete(self, name):
         category = CategoryModel.find_by_name(name)
         if category:
@@ -19,10 +19,15 @@ class Category(Resource):
         return {'message': 'Category deleted'}
 
 class CategoryList(Resource):
-    @jwt_required()
+    @jwt_required(optional=True)
     def get(self):
-        categories = {'categories': [category.json() for category in CategoryModel.query.all()]}
-        return categories
+        current_identity = get_jwt_identity()
+        categories = [category.json() for category in CategoryModel.find_all()]
+        if current_identity:
+            return {'categories': categories}
+        return {'categories': [category['name'] for category in categories],
+                'message': 'More information available if you log in'
+        }
 
     @jwt_required()
     def post(self):
