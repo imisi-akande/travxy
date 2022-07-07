@@ -1,15 +1,14 @@
 from flask import Flask, jsonify
 from datetime import timedelta
 from flask_restful import Api
-from flask_sqlalchemy import SQLAlchemy
 from travxy.db import db
 from flask_jwt_extended import JWTManager
-from travxy.resources.user import (UserRegister, User, UserLogin, 
+from travxy.resources.user import (UserRegister, User, UserLogin, UserLogout, 
                                     UserList, TokenRefresh)
 from travxy.resources.tour import Tour, TourList
 from travxy.resources.category import Category, CategoryList
 from flask_migrate import Migrate
-
+from travxy.blocklist import BLOCKLIST
 from travxy.config import app_config
 migrate = Migrate()
 
@@ -26,6 +25,11 @@ def create_app(env_name):
     app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
     app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
     jwt = JWTManager(app)
+
+    @jwt.token_in_blocklist_loader
+    def check_if_token_in_blocklist(jwt_header, jwt_payload: dict):
+        jti = jwt_payload["jti"]
+        return jti in BLOCKLIST
 
     @jwt.expired_token_loader
     def expired_token_callback(jwt_header, jwt_payload):
@@ -47,6 +51,11 @@ def create_app(env_name):
         return jsonify(description='The token is not fresh',
                         error='Fresh token required'), 401
 
+    @jwt.revoked_token_loader
+    def revoked_token_callback(jwt_header, jwt_payload):
+        return jsonify(description="The token has been revoked.",
+                        error='token_revoked'), 401
+
     api.add_resource(Category, '/category/<string:name>')
     api.add_resource(CategoryList, '/categories')
     api.add_resource(Tour, '/tour/<string:name>')
@@ -54,6 +63,7 @@ def create_app(env_name):
     api.add_resource(UserRegister, '/register')
     api.add_resource(User, '/user/<user_id>')
     api.add_resource(UserLogin, '/login')
+    api.add_resource(UserLogout, '/logout')
     api.add_resource(UserList, '/users')
     api.add_resource(TokenRefresh, '/refresh')
 

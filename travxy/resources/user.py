@@ -3,7 +3,9 @@ from datetime import timedelta
 
 from travxy.models.user import UserModel
 from flask_jwt_extended import (create_access_token, create_refresh_token, 
-                                get_jwt_identity, jwt_required)
+                                get_jwt_identity, jwt_required, get_jwt)
+
+from travxy.blocklist import BLOCKLIST
 
 class UserRegister(Resource):
 
@@ -54,6 +56,13 @@ class UserLogin(Resource):
             }, 200
 
         return {'message': 'Invalid Credentials'}, 401
+
+class UserLogout(Resource):
+    @jwt_required()
+    def post(self):
+        jti = get_jwt()['jti']
+        BLOCKLIST.add(jti)
+        return {"message": "Successfully logged out"}, 200
 
 class UserList(Resource):
     def get(self):
