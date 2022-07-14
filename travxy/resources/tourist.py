@@ -1,12 +1,10 @@
-from travxy.models.tourist import TouristInfoModel, GenderChoices
+from travxy.models.tourist import TouristInfoModel
 from flask_restful import Resource, request
-from flask import jsonify
-import json
 
 class TouristList(Resource):
     def get(self):
-        tourists = [tourist.get_from_db() for tourist in TouristInfoModel.find_all()]
-        return jsonify(tourists)
+        tourists = [tourist.json() for tourist in TouristInfoModel.find_all()]
+        return tourists
 
     def post(self):
         user_id = request.json.get('user_id')
@@ -16,9 +14,9 @@ class TouristList(Resource):
         nationality = request.json.get('nationality')
         gender = request.json.get('gender', 'Neutral')
         tourist = TouristInfoModel(nationality, gender, user_id)
-        tour_dict = tourist.to_json()
+        tourist_dict = tourist.json()
         try:
             tourist.save_to_db()
         except:
             return {'message': 'An error occured while creating tourists'}, 500
-        return jsonify(tour_dict)
+        return tourist_dict, 201

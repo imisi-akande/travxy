@@ -9,7 +9,7 @@ class TourModel(db.Model):
 
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id', ondelete="CASCADE"))
     category = db.relationship('CategoryModel', back_populates="tours")
-
+    
     def __init__(self, name, location, about, category_id):
         self.name = name
         self.location = location
