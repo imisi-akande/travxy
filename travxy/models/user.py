@@ -1,6 +1,6 @@
 from travxy.db import db
 from ..models import bcrypt
-
+#from models.details import user_detail
 
 class UserModel(db.Model):
     __tablename__ = 'users'
@@ -9,6 +9,8 @@ class UserModel(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), nullable=False)
+    tourist = db.relationship("TouristInfoModel", back_populates="user", uselist=False)
+
 
     def __init__(self, username, email, password):
         self.username = username
