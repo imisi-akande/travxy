@@ -9,7 +9,7 @@ class TouristInfoModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nationality = db.Column(db.String(80), nullable=False)
     gender = db.Column(ENUM("Male", "Female", "Neutral",
-                                       name="gender_level", nullable=False, create_type=False))
+                                       name="gender_level", create_type=False))
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"))
     user = db.relationship("UserModel", back_populates="tourist")
