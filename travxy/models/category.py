@@ -3,7 +3,7 @@ from travxy.db import db
 class CategoryModel(db.Model):
     __tablename__ = 'categories'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80))
+    name = db.Column(db.String(80), unique=True)
     tours = db.relationship('TourModel', back_populates='category', lazy='dynamic')
     details = db.relationship('DetailModel', back_populates='category', lazy='dynamic')
 

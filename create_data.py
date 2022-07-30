@@ -4,6 +4,7 @@ import configparser
 from data_helper.users import user_tuple
 from data_helper.categories import category_tuple
 from data_helper.tours import tour_tuple
+from data_helper.tourists import tourists_tuple
 
 
 config = configparser.ConfigParser()
@@ -45,12 +46,21 @@ for row in category_cursor.fetchall():
     print(row)
 
 tour_cursor =  connection.cursor()
-insert_tour_query = 'insert into tours (name, location, about, category_id) values %s'
-psycopg2.extras.execute_values(tour_cursor, insert_tour_query, tour_tuple, template=None, page_size=100
+insert_tour_query = 'insert into tours (name, location, country, about, category_id) values %s'
+psycopg2.extras.execute_values(tour_cursor, insert_tour_query, tour_tuple, template=None, page_size=500
 )
 select_tour_query = "SELECT * FROM tours"
 tour_cursor.execute(select_tour_query)
 for row in tour_cursor.fetchall():
+    print(row)
+
+tourists_cursor =  connection.cursor()
+insert_tourists_query = 'insert into tourists (nationality, gender, user_id) values %s'
+psycopg2.extras.execute_values(tourists_cursor, insert_tourists_query, tourists_tuple, template=None, page_size=100
+)
+select_tourists_query = "SELECT * FROM tourists"
+tourists_cursor.execute(select_tour_query)
+for row in tourists_cursor.fetchall():
     print(row)
 
 connection.commit()

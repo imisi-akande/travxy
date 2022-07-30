@@ -1,6 +1,5 @@
 from travxy.db import db
 from ..models import bcrypt
-#from models.details import user_detail
 
 class UserModel(db.Model):
     __tablename__ = 'users'

@@ -3,21 +3,23 @@ from travxy.db import db
 class TourModel(db.Model):
     __tablename__ = 'tours'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), unique=True, nullable=False)
+    name = db.Column(db.String(80), nullable=False)
     location = db.Column(db.String(80), nullable=False)
+    country = db.Column(db.String(80), nullable=False)
     about = db.Column(db.String(500), nullable=False)
 
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id', ondelete="CASCADE"))
     category = db.relationship('CategoryModel', back_populates="tours")
     
-    def __init__(self, name, location, about, category_id):
+    def __init__(self, name, location, country, about, category_id):
         self.name = name
         self.location = location
+        self.country = country
         self.about = about
         self.category_id = category_id
 
     def json(self):
-        return{'name': self.name, 'location': self.location, 'about': self.about, 'category_id': self.category_id}
+        return{'name': self.name, 'location': self.location, 'country': self.country, 'about': self.about, 'category_id': self.category_id}
 
     @classmethod
     def find_by_name(cls, name):

@@ -1,7 +1,4 @@
-category_tuple=[
-    ('Domestic',),
-    ('International',),
-    ('Business',),
+category_tuple=[('Business',),
     ('Adventure',),
     ('Wildlife',),
     ('Medical',),
@@ -15,5 +12,7 @@ category_tuple=[
     ('Cruise',),
     ('Rural',),
     ('Beach',),
-    ('Space',)
+    ('Space',),
+    ('Lake',),
+    ('Park',),
 ]
