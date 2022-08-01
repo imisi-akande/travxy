@@ -26,21 +26,12 @@ class TouristInfoModel(db.Model):
         return {'nationality': self.nationality, 'gender':self.gender, 'user_id': self.user_id, 'tour_details':[tour_details.json() for tour_details in self.tour_details_of_tourists.all()]}
 
     @classmethod
-    def find_by_name(cls, id):
-        return cls.query.filter_by(id=id).first()
-
-    @classmethod
     def find_by_id(cls, user_id):
         return cls.query.filter_by(user_id=user_id).first()
 
     @classmethod
     def find_all(cls):
         return cls.query.all()
-
-    @classmethod
-    def find_user(cls, current_identity):
-        return cls.query.filter_by(user_id=current_identity).first()
-
 
     def save_to_db(self):
         db.session.add(self)
