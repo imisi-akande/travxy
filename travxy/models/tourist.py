@@ -23,7 +23,7 @@ class TouristInfoModel(db.Model):
         self.user_id = user_id
 
     def json(self):
-        return {'nationality': self.nationality, 'gender':self.gender, 'user_id': self.user_id, 'tour_details':[tour_details.json() for tour_details in self.tour_details_of_tourists.all()]}
+        return {'nationality': self.nationality, 'gender':self.gender, 'tour_details':[tour_details.json() for tour_details in self.tour_details_of_tourists.all()]}
 
     @classmethod
     def find_by_id(cls, user_id):

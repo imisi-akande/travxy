@@ -34,9 +34,7 @@ class DetailModel(db.Model):
     def json(self):
         return {'detail_id': self.id, 'tour_name': self.tour_name, 'departure': self.departure, 'transportation': self.transportation,
                 'experience': self.experience, 'upvote': self.upvote,
-                'estimated_cost': self.estimated_cost,
-
-                'category': self.category_id}
+                'estimated_cost': self.estimated_cost, 'category': self.category_id}
 
     @classmethod
     def find_all(cls):
