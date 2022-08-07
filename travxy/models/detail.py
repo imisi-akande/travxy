@@ -15,9 +15,12 @@ class DetailModel(db.Model):
     experience = db.Column(db.Text, nullable=False)
     upvote = db.Column(db.Integer, nullable=False)
     estimated_cost = db.Column(db.Float, nullable=False)
-    tourists_tour_details = db.relationship(
+    tourists_info = db.relationship(
         "TouristInfoModel", secondary=tourist_detail, back_populates="tour_details_of_tourists",
         lazy='dynamic'
+        )
+    tourists = db.relationship(
+        "TouristInfoModel", secondary=tourist_detail, viewonly=True
         )
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id', ondelete="CASCADE"))
     category = db.relationship('CategoryModel', back_populates="details")
@@ -35,6 +38,9 @@ class DetailModel(db.Model):
         return {'detail_id': self.id, 'tour_name': self.tour_name, 'departure': self.departure, 'transportation': self.transportation,
                 'experience': self.experience, 'upvote': self.upvote,
                 'estimated_cost': self.estimated_cost, 'category': self.category_id}
+
+    def with_tourist_json(self):
+        return {**self.json(), 'tourists': [tourist.json() for tourist in self.tourists]}
 
     @classmethod
     def find_all(cls):

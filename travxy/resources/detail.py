@@ -3,12 +3,15 @@ from travxy.models.detail import DetailModel
 from travxy.models.tourist import TouristInfoModel
 from travxy.models.tour import TourModel
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from sqlalchemy.orm import joinedload
+
 
 class DetailList(Resource):
     @jwt_required()
     def get(self):
-        details = [detail.json() for detail in DetailModel.find_all()]
-        return {'details': details}
+        detail_instances = DetailModel.query.options(joinedload('tourists'))
+        details = [detail.with_tourist_json() for detail in detail_instances]
+        return details
 
     @jwt_required()
     def post(self):
@@ -19,6 +22,8 @@ class DetailList(Resource):
         upvote = request.json.get('upvote')
         estimated_cost = request.json.get('estimated_cost')
         tour_instance = TourModel.find_by_name(tour_name)
+        if tour_instance is None:
+            return {'message': 'This tour name does not exist'}, 400
         category_id = tour_instance.category_id
         detail_instance = DetailModel.find_by_name(tour_name)
         current_identity = get_jwt_identity()
@@ -33,9 +38,9 @@ class DetailList(Resource):
                     return {'message': "A tour with name '{}' already exists".format(tour_name)}, 400
         detail = DetailModel(tour_name, departure, transportation, experience, upvote,
                                 estimated_cost, category_id)
-        tourist_user.tour_details_of_tourists.append(detail)
+        detail.tourists_info.append(tourist_user)
         try:
-            tourist_user.save_to_db()
+            detail.save_to_db()
         except:
             return{'message': 'An error occured while trying to insert details'}, 500
-        return tourist_user.json(), 201
+        return detail.json(), 201

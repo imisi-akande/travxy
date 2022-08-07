@@ -13,9 +13,13 @@ class TouristInfoModel(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"))
     user = db.relationship("UserModel", back_populates="tourist")
+
     tour_details_of_tourists = db.relationship(
-            "DetailModel", secondary=tourist_detail, back_populates="tourists_tour_details",
+            "DetailModel", secondary=tourist_detail, back_populates="tourists_info",
             lazy='dynamic', cascade="all, delete")
+
+    details_info = db.relationship(
+            "DetailModel", secondary=tourist_detail, viewonly=True)
 
     def __init__(self, nationality, gender, user_id):
         self.nationality = nationality
@@ -23,7 +27,10 @@ class TouristInfoModel(db.Model):
         self.user_id = user_id
 
     def json(self):
-        return {'nationality': self.nationality, 'gender':self.gender, 'tour_details':[tour_details.json() for tour_details in self.tour_details_of_tourists.all()]}
+        return {'tourist_id': self.id, 'nationality': self.nationality, 'gender': self.gender}
+
+    def with_details_json(self):
+        return {**self.json(), 'tour_details':[tour_details.json() for tour_details in self.details_info]}
 
     @classmethod
     def find_by_id(cls, user_id):
