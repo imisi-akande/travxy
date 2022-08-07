@@ -7,6 +7,8 @@ class TourModel(db.Model):
     location = db.Column(db.String(80), nullable=False)
     country = db.Column(db.String(80), nullable=False)
     about = db.Column(db.String(500), nullable=False)
+    details = db.relationship('DetailModel', back_populates='tour', lazy='dynamic')
+
 
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id', ondelete="CASCADE"))
     category = db.relationship('CategoryModel', back_populates="tours")
