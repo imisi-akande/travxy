@@ -27,6 +27,8 @@ class UserModel(db.Model):
             'email': self.email
         }
 
+    def with_tourist_json(self):
+        return {**self.json(), 'tourist_id': self.id}
     def delete_from_db(self):
         db.session.delete(self)
         db.session.commit()

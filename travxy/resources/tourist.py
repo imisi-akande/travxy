@@ -32,9 +32,11 @@ class TouristDetail(Resource):
     @jwt_required()
     def post(self):
         tour_name = request.json.get('tour_name')
-        #tour_id = DetailModel.find_by_id(tour_id)
         departure = request.json.get('departure')
         transportation = request.json.get('transportation')
+        travel_buddy_one = request.json.get('travel_buddy_one')
+        travel_buddy_two = request.json.get('travel_buddy_two')
+        travel_buddy_three = request.json.get('travel_buddy_three')
         experience = request.json.get('experience')
         upvote = request.json.get('upvote')
         estimated_cost = request.json.get('estimated_cost')
@@ -55,7 +57,7 @@ class TouristDetail(Resource):
                 detail_id = detail_instance.tour_id
                 if detail_id == tourist_detail.tour_id:
                     return {'message': "A tour with name '{}' already exists".format(tour_name)}, 400
-        detail = DetailModel(tour_id, tour_name, departure, transportation, experience, upvote,
+        detail = DetailModel(tour_id, tour_name, departure, transportation, travel_buddy_one, travel_buddy_two, travel_buddy_three, experience, upvote,
                                 estimated_cost, category_id)
         tourist_user.tour_details_of_tourists.append(detail)
         try:
