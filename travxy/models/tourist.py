@@ -33,7 +33,7 @@ class TouristInfoModel(db.Model):
         return {**self.json(), 'tour_details':[tour_details.json() for tour_details in self.details_info]}
 
     @classmethod
-    def find_by_id(cls, user_id):
+    def find_by_user_id(cls, user_id):
         return cls.query.filter_by(user_id=user_id).first()
 
     @classmethod

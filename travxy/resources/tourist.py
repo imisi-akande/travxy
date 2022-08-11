@@ -16,7 +16,7 @@ class TouristList(Resource):
     @jwt_required()
     def post(self):
         user_id = get_jwt_identity()
-        if TouristInfoModel.find_by_id(user_id):
+        if TouristInfoModel.find_by_user_id(user_id):
             return {'message': "A tourist with userid '{}' already exists".format(user_id)}, 400
 
         nationality = request.json.get('nationality')
@@ -48,7 +48,7 @@ class TouristDetail(Resource):
         category_id = tour_instance.category_id
         detail_instance = DetailModel.find_by_id(tour_id)
         current_identity = get_jwt_identity()
-        tourist_user = TouristInfoModel.find_by_id(current_identity)
+        tourist_user = TouristInfoModel.find_by_user_id(current_identity)
         if tourist_user is None:
             return {'message': 'User is not a registered tourist'}
         tourist_details = tourist_user.tour_details_of_tourists.all()

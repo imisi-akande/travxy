@@ -27,6 +27,10 @@ class TourModel(db.Model):
     def find_by_name(cls, name):
         return cls.query.filter_by(name=name).first()
 
+    @classmethod
+    def find_by_id(cls, tour_id):
+        return cls.query.filter_by(id=tour_id).first()
+
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
