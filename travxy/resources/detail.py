@@ -6,16 +6,6 @@ from travxy.models.tour import TourModel
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy.orm import joinedload
 
-
-class DetailList(Resource):
-
-    @jwt_required()
-    def get(self):
-        detail_instances = DetailModel.query.options(joinedload('tourists'))
-        details = [detail.with_tourist_json() for detail in detail_instances]
-        return details
-
-
 class Detail(Resource):
 
     @jwt_required()
@@ -76,7 +66,7 @@ class Detail(Resource):
             return {'message': 'All travel buddies must be registered tourists'}, 400
 
         if detail_author.id != detail_instance.travel_buddies_created_by:
-            return {'message': 'Unauthorized: Detail does not exist'}, 401
+            return {'message': 'Detail does not exist'}, 404
 
         if detail_author.user.email in travel_buddies:
             return {'message': 'You cannot add yourself into the travel buddy list'}, 400
@@ -98,6 +88,13 @@ class Detail(Resource):
             return{'message': 'An error occured while trying to update details'}, 500
         return detail_instance.with_tourist_json()
 
+class DetailList(Resource):
+
+    @jwt_required()
+    def get(self):
+        detail_instances = DetailModel.query.options(joinedload('tourists'))
+        details = [detail.with_tourist_json() for detail in detail_instances]
+        return details
 
 
 

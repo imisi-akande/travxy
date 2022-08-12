@@ -9,7 +9,7 @@ from travxy.resources.tour import Tour, TourList
 from travxy.resources.category import Category, CategoryList
 from travxy.resources.tourist import TouristDetail, TouristList
 from travxy.resources.detail import DetailList, Detail
-from travxy.resources.experience import TouristExperienceList
+from travxy.resources.experience import TouristExperienceList, TouristExperience
 
 from flask_migrate import Migrate
 from travxy.blocklist import BLOCKLIST
@@ -76,6 +76,7 @@ def create_app(env_name):
 
     api.add_resource(TouristDetail, '/tourist-details')
     api.add_resource(TouristExperienceList, '/tourists-experience')
+    api.add_resource(TouristExperience, '/tourist-experience')
 
     return app
 
