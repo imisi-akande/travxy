@@ -7,8 +7,10 @@ from travxy.resources.user import (UserRegister, User, UserLogin, UserLogout,
                                     UserList, TokenRefresh)
 from travxy.resources.tour import Tour, TourList
 from travxy.resources.category import Category, CategoryList
-from travxy.resources.tourist import TouristList
-from travxy.resources.detail import DetailList
+from travxy.resources.tourist import TouristDetail, TouristList
+from travxy.resources.detail import DetailList, Detail
+from travxy.resources.experience import TouristExperienceList
+
 from flask_migrate import Migrate
 from travxy.blocklist import BLOCKLIST
 from travxy.config import app_config
@@ -70,6 +72,10 @@ def create_app(env_name):
     api.add_resource(TokenRefresh, '/refresh')
     api.add_resource(TouristList, '/tourists')
     api.add_resource(DetailList, '/details')
+    api.add_resource(Detail, '/detail')
+
+    api.add_resource(TouristDetail, '/tourist-details')
+    api.add_resource(TouristExperienceList, '/tourists-experience')
 
     return app
 

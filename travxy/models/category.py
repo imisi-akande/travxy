@@ -5,8 +5,6 @@ class CategoryModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True)
     tours = db.relationship('TourModel', back_populates='category', lazy='dynamic')
-    details = db.relationship('DetailModel', back_populates='category', lazy='dynamic')
-
 
     def __init__(self, name):
         self.name = name
