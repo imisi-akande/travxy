@@ -13,13 +13,6 @@ class TourModel(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id', ondelete="CASCADE"))
     category = db.relationship('CategoryModel', back_populates="tours")
 
-    # def __init__(self, name, location, country, about, category_id):
-    #     self.name = name
-    #     self.location = location
-    #     self.country = country
-    #     self.about = about
-    #     self.category_id = category_id
-
     def json(self):
         return {'name': self.name, 'location': self.location, 'country': self.country, 'about': self.about, 'category_id': self.category_id}
 

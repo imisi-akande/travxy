@@ -62,7 +62,7 @@ def create_app(env_name):
 
     api.add_resource(Category, '/category/<string:name>')
     api.add_resource(CategoryList, '/categories')
-    api.add_resource(Tour, '/tour/<string:tour_id>')
+    api.add_resource(Tour, '/tour/<int:tour_id>')
     api.add_resource(TourList, '/tours')
     api.add_resource(UserRegister, '/register')
     api.add_resource(User, '/user/<user_id>')
