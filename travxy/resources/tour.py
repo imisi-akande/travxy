@@ -31,6 +31,9 @@ class TourList(Resource):
         country = request.json.get('country')
         about = request.json.get('about')
         category_id = request.json.get('category_id')
+        if not all([name, location, country, about, category_id]):
+            return {'message': 'Missing fields required'}, 400
+
         tour = TourModel(name=name, location=location, country=country,
                             about=about, category_id=category_id)
         try:
@@ -48,6 +51,8 @@ class TourList(Resource):
         about = request.json.get('about')
         category_id = request.json.get('category_id')
 
+        if not all([name, location, country, about, category_id]):
+            return {'message': 'Missing fields required'}, 400
         tour = TourModel.find_by_id(tour_id)
         if tour is None:
             return {'message': 'Tour does not exist'}

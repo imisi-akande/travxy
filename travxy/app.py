@@ -60,7 +60,7 @@ def create_app(env_name):
         return jsonify(description="The token has been revoked.",
                         error='token_revoked'), 401
 
-    api.add_resource(Category, '/category/<string:name>')
+    api.add_resource(Category, '/category/<int:id>')
     api.add_resource(CategoryList, '/categories')
     api.add_resource(Tour, '/tour/<int:tour_id>')
     api.add_resource(TourList, '/tours')

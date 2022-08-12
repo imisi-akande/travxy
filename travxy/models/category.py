@@ -6,15 +6,15 @@ class CategoryModel(db.Model):
     name = db.Column(db.String(80), unique=True)
     tours = db.relationship('TourModel', back_populates='category', lazy='dynamic')
 
-    def __init__(self, name):
-        self.name = name
-
     def json(self):
+        return {'id': self.id, 'name': self.name}
+
+    def with_tour_json(self):
         return {'id': self.id, 'name': self.name, 'tours': [tour.json() for tour in self.tours.all()]}
 
     @classmethod
-    def find_by_name(cls, name):
-        return cls.query.filter_by(name=name).first()
+    def find_by_id(cls, id):
+        return cls.query.filter_by(id=id).first()
 
     @classmethod
     def find_all(cls):

@@ -21,11 +21,6 @@ class TouristInfoModel(db.Model):
     details_info = db.relationship(
             "DetailModel", secondary=tourist_detail, viewonly=True)
 
-    def __init__(self, nationality, gender, user_id):
-        self.nationality = nationality
-        self.gender = gender
-        self.user_id = user_id
-
     def json(self):
         return {'tourist_id': self.id, 'nationality': self.nationality, 'gender': self.gender}
 

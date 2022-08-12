@@ -16,6 +16,8 @@ class Detail(Resource):
         travel_buddies = request.json.get('travel_buddies')
         estimated_cost = request.json.get('estimated_cost')
 
+        if not all([tour_id, departure, transportation, estimated_cost]):
+            return {'message': 'Missing Fields required'}, 400
         tour_instance = TourModel.find_by_id(tour_id)
         if tour_instance is None:
             return {'message': 'This tour does not exist'}, 400
@@ -52,6 +54,10 @@ class Detail(Resource):
         transportation = request.json.get('transportation')
         travel_buddies = request.json.get('travel_buddies')
         estimated_cost = request.json.get('estimated_cost')
+
+        if not all([detail_id, departure, transportation, estimated_cost]):
+            return {'message': 'Missing Fields required'}, 400
+
         current_identity = get_jwt_identity()
         detail_author = TouristInfoModel.find_by_user_id(current_identity)
 

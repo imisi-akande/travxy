@@ -15,6 +15,8 @@ class TouristExperience(Resource):
         detail_id = request.json.get('detail_id')
         comment = request.json.get('comment')
         rating = request.json.get('rating')
+        if not all([detail_id, comment, rating]):
+            return {'message': 'Missing Required fields'}, 400
         detail_instance = DetailModel.query.join(TouristInfoModel,
                                     DetailModel.tourists_info).filter(
                                     DetailModel.id==detail_id,
@@ -44,6 +46,9 @@ class TouristExperience(Resource):
         detail_id = request.json.get('detail_id')
         comment = request.json.get('comment')
         rating = request.json.get('rating')
+
+        if not all([detail_id, comment, rating]):
+            return {'message': 'Missing Required fields'}, 400
         detail_instance = DetailModel.query.join(TouristInfoModel,
                                     DetailModel.tourists_info).filter(
                                     DetailModel.id==detail_id,
