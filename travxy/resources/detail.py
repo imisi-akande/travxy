@@ -4,6 +4,7 @@ from travxy.models.user import UserModel
 from travxy.models.tourist import TouristInfoModel
 from travxy.models.tour import TourModel
 from flask_jwt_extended import jwt_required, get_jwt_identity
+
 from sqlalchemy.orm import joinedload
 
 class Detail(Resource):

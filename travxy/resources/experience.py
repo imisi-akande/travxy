@@ -15,6 +15,7 @@ class TouristExperience(Resource):
         detail_id = request.json.get('detail_id')
         comment = request.json.get('comment')
         rating = request.json.get('rating')
+        duration = request.json.get('duration')
         if not all([detail_id, comment, rating]):
             return {'message': 'Missing Required fields'}, 400
         detail_instance = DetailModel.query.join(TouristInfoModel,
@@ -29,7 +30,8 @@ class TouristExperience(Resource):
             return {'message': 'Tourist Experience already exists for this trip'}
         experience = TouristExperienceModel(tourist_id=tourist_id,
                                             detail_id=detail_id,
-                                            comment=comment, rating=rating)
+                                            comment=comment, rating=rating,
+                                            duration=duration)
         try:
             experience.save_to_db()
         except:
@@ -46,6 +48,7 @@ class TouristExperience(Resource):
         detail_id = request.json.get('detail_id')
         comment = request.json.get('comment')
         rating = request.json.get('rating')
+        duration = request.json.get('duration')
 
         if not all([detail_id, comment, rating]):
             return {'message': 'Missing Required fields'}, 400
@@ -62,6 +65,8 @@ class TouristExperience(Resource):
         experience_instance.detail_id = detail_id
         experience_instance.comment = comment
         experience_instance.rating = rating
+        experience_instance.duration = duration
+
         try:
             experience_instance.save_to_db()
         except:
