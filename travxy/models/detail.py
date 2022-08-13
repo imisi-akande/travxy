@@ -12,7 +12,7 @@ class DetailModel(db.Model):
     departure = db.Column(db.String(80), nullable=False)
     transportation = db.Column(db.String(80), nullable=False)
     travel_buddies_created_by = db.Column(db.Integer, db.ForeignKey('tourists.id', ondelete="CASCADE"))
-    estimated_cost = db.Column(db.Float, nullable=False)
+    estimated_cost = db.Column(db.Numeric(precision=10, asdecimal=False, decimal_return_scale=None), nullable=False)
     tourists_info = db.relationship(
         "TouristInfoModel", secondary=tourist_detail, back_populates="tour_details_of_tourists",
         lazy='dynamic'

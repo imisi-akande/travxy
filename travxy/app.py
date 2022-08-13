@@ -9,7 +9,7 @@ from travxy.resources.tour import Tour, TourList
 from travxy.resources.category import Category, CategoryList
 from travxy.resources.tourist import TouristDetail, TouristList
 from travxy.resources.detail import DetailList, Detail
-from travxy.resources.experience import TouristExperienceList
+from travxy.resources.experience import TouristExperienceList, TouristExperience
 
 from flask_migrate import Migrate
 from travxy.blocklist import BLOCKLIST
@@ -60,9 +60,9 @@ def create_app(env_name):
         return jsonify(description="The token has been revoked.",
                         error='token_revoked'), 401
 
-    api.add_resource(Category, '/category/<string:name>')
+    api.add_resource(Category, '/category/<int:id>')
     api.add_resource(CategoryList, '/categories')
-    api.add_resource(Tour, '/tour/<string:name>')
+    api.add_resource(Tour, '/tour/<int:tour_id>')
     api.add_resource(TourList, '/tours')
     api.add_resource(UserRegister, '/register')
     api.add_resource(User, '/user/<user_id>')
@@ -76,6 +76,7 @@ def create_app(env_name):
 
     api.add_resource(TouristDetail, '/tourist-details')
     api.add_resource(TouristExperienceList, '/tourists-experience')
+    api.add_resource(TouristExperience, '/tourist-experience')
 
     return app
 

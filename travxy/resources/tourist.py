@@ -21,7 +21,10 @@ class TouristList(Resource):
 
         nationality = request.json.get('nationality')
         gender = request.json.get('gender', 'Neutral')
-        tourist = TouristInfoModel(nationality, gender, user_id)
+        if not all([nationality, gender]):
+            return {'message': 'Missing Fields required'}, 400
+        tourist = TouristInfoModel(nationality=nationality, gender=gender,
+                                   user_id=user_id)
         try:
             tourist.save_to_db()
         except:
@@ -39,8 +42,9 @@ class TouristDetail(Resource):
         tour_id = request.json.get('tour_id')
         departure = request.json.get('departure')
         transportation = request.json.get('transportation')
-
         estimated_cost = request.json.get('estimated_cost')
+        if not all([tour_id, departure, transportation, estimated_cost]):
+            return {'message': 'Missing Required Fields'}, 400
         tour_instance = TourModel.find_by_id(tour_id)
 
         if tour_instance is None:

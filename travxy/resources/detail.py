@@ -4,17 +4,8 @@ from travxy.models.user import UserModel
 from travxy.models.tourist import TouristInfoModel
 from travxy.models.tour import TourModel
 from flask_jwt_extended import jwt_required, get_jwt_identity
+
 from sqlalchemy.orm import joinedload
-
-
-class DetailList(Resource):
-
-    @jwt_required()
-    def get(self):
-        detail_instances = DetailModel.query.options(joinedload('tourists'))
-        details = [detail.with_tourist_json() for detail in detail_instances]
-        return details
-
 
 class Detail(Resource):
 
@@ -26,6 +17,8 @@ class Detail(Resource):
         travel_buddies = request.json.get('travel_buddies')
         estimated_cost = request.json.get('estimated_cost')
 
+        if not all([tour_id, departure, transportation, estimated_cost]):
+            return {'message': 'Missing Fields required'}, 400
         tour_instance = TourModel.find_by_id(tour_id)
         if tour_instance is None:
             return {'message': 'This tour does not exist'}, 400
@@ -62,6 +55,10 @@ class Detail(Resource):
         transportation = request.json.get('transportation')
         travel_buddies = request.json.get('travel_buddies')
         estimated_cost = request.json.get('estimated_cost')
+
+        if not all([detail_id, departure, transportation, estimated_cost]):
+            return {'message': 'Missing Fields required'}, 400
+
         current_identity = get_jwt_identity()
         detail_author = TouristInfoModel.find_by_user_id(current_identity)
 
@@ -76,7 +73,7 @@ class Detail(Resource):
             return {'message': 'All travel buddies must be registered tourists'}, 400
 
         if detail_author.id != detail_instance.travel_buddies_created_by:
-            return {'message': 'Unauthorized: Detail does not exist'}, 401
+            return {'message': 'Detail does not exist'}, 404
 
         if detail_author.user.email in travel_buddies:
             return {'message': 'You cannot add yourself into the travel buddy list'}, 400
@@ -98,6 +95,13 @@ class Detail(Resource):
             return{'message': 'An error occured while trying to update details'}, 500
         return detail_instance.with_tourist_json()
 
+class DetailList(Resource):
+
+    @jwt_required()
+    def get(self):
+        detail_instances = DetailModel.query.options(joinedload('tourists'))
+        details = [detail.with_tourist_json() for detail in detail_instances]
+        return details
 
 
 
