@@ -9,7 +9,7 @@ class UserModel(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), nullable=False)
     tourist = db.relationship("TouristInfoModel", back_populates="user", uselist=False)
-
+    
 
     def __init__(self, username, email, password):
         self.username = username
@@ -29,6 +29,7 @@ class UserModel(db.Model):
 
     def with_tourist_json(self):
         return {**self.json(), 'tourist_id': self.id}
+
     def delete_from_db(self):
         db.session.delete(self)
         db.session.commit()

@@ -1,4 +1,5 @@
 from travxy.db import db
+from sqlalchemy.dialects.postgresql import ENUM
 
 
 tourist_detail = db.Table('tourist_detail',
@@ -10,7 +11,8 @@ class DetailModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     departure = db.Column(db.String(80), nullable=False)
-    transportation = db.Column(db.String(80), nullable=False)
+    transportation = db.Column(ENUM("Air", "Road", "Rail", "Water",
+                                       name="transportation_types", nullable=False, create_type=False))
     travel_buddies_created_by = db.Column(db.Integer, db.ForeignKey('tourists.id', ondelete="CASCADE"))
     estimated_cost = db.Column(db.Numeric(precision=10, asdecimal=False, decimal_return_scale=None), nullable=False)
     tourists_info = db.relationship(

@@ -1,7 +1,8 @@
 import os
 from dotenv import load_dotenv
 
-from travxy.app import create_app
+from travxy import create_app
+
 load_dotenv('.env')
 
 env_name = os.getenv('FLASK_ENV')
