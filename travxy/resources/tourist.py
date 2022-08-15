@@ -21,10 +21,11 @@ class TouristList(Resource):
 
         nationality = request.json.get('nationality')
         gender = request.json.get('gender', 'Neutral')
+        role_id = request.json.get('role_id')
         if not all([nationality, gender]):
             return {'message': 'Missing Fields required'}, 400
         tourist = TouristInfoModel(nationality=nationality, gender=gender,
-                                   user_id=user_id)
+                                   user_id=user_id, role_id=role_id)
         try:
             tourist.save_to_db()
         except:

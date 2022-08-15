@@ -3,6 +3,7 @@ from datetime import timedelta
 from flask_restful import Api
 from travxy.db import db
 from flask_jwt_extended import JWTManager
+from .resources.role import RoleList
 from travxy.resources.user import (UserRegister, User, UserLogin, UserLogout, 
                                     UserList, TokenRefresh)
 from travxy.resources.tour import Tour, TourList
@@ -10,10 +11,14 @@ from travxy.resources.category import Category, CategoryList
 from travxy.resources.tourist import TouristDetail, TouristList
 from travxy.resources.detail import DetailList, Detail
 from travxy.resources.experience import TouristExperienceList, TouristExperience
+from travxy.resources.role import RoleList
 
 from flask_migrate import Migrate
 from travxy.blocklist import BLOCKLIST
 from travxy.config import app_config
+from travxy.models import category, detail, experience, role, tour, tourist, user
+
+
 migrate = Migrate()
 
 def create_app(env_name):
@@ -29,7 +34,7 @@ def create_app(env_name):
     app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
     app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
     jwt = JWTManager(app)
-
+    
     @jwt.token_in_blocklist_loader
     def check_if_token_in_blocklist(jwt_header, jwt_payload: dict):
         jti = jwt_payload["jti"]
@@ -77,6 +82,7 @@ def create_app(env_name):
     api.add_resource(TouristDetail, '/tourist-details')
     api.add_resource(TouristExperienceList, '/tourists-experience')
     api.add_resource(TouristExperience, '/tourist-experience')
+    api.add_resource(RoleList, '/roles')
 
     return app
 

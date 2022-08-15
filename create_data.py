@@ -5,7 +5,7 @@ from data_helper.users import user_tuple
 from data_helper.categories import category_tuple
 from data_helper.tours import tour_tuple
 from data_helper.tourists import tourists_tuple
-
+from data_helper.roles import roles_tuple
 
 config = configparser.ConfigParser()
 config.read('./data_helper/database.ini')
@@ -35,6 +35,15 @@ user_cursor.execute(select_user_query)
 for row in user_cursor.fetchall():
     print(row)
 
+roles_cursor =  connection.cursor()
+insert_roles_query = 'insert into roles(name) values %s'
+psycopg2.extras.execute_values(roles_cursor, insert_roles_query, roles_tuple, template=None, page_size=100
+)
+select_roles_query = "SELECT * FROM roles"
+roles_cursor.execute(select_roles_query)
+for row in roles_cursor.fetchall():
+    print(row)
+
 category_cursor = connection.cursor()
 insert_category_query = 'insert into categories (name) values %s'
 psycopg2.extras.execute_values(
@@ -55,13 +64,14 @@ for row in tour_cursor.fetchall():
     print(row)
 
 tourists_cursor =  connection.cursor()
-insert_tourists_query = 'insert into tourists (nationality, gender, user_id) values %s'
+insert_tourists_query = 'insert into tourists (nationality, gender, user_id, role_id) values %s'
 psycopg2.extras.execute_values(tourists_cursor, insert_tourists_query, tourists_tuple, template=None, page_size=100
 )
 select_tourists_query = "SELECT * FROM tourists"
-tourists_cursor.execute(select_tour_query)
+tourists_cursor.execute(select_tourists_query)
 for row in tourists_cursor.fetchall():
     print(row)
+
 
 connection.commit()
 connection.close()

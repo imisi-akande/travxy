@@ -9,10 +9,14 @@ class TouristInfoModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nationality = db.Column(db.String(80), nullable=False)
     gender = db.Column(ENUM("Male", "Female", "Neutral",
-                                       name="gender_level", create_type=False))
+                                       name="gender_level", nullable=False,
+                                       create_type=False))
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"))
     user = db.relationship("UserModel", back_populates="tourist")
+    role_id = db.Column(db.Integer, db.ForeignKey("roles.id", ondelete="CASCADE"))
+    role = db.relationship("RoleModel", back_populates = "tourists")
+
 
     tour_details_of_tourists = db.relationship(
             "DetailModel", secondary=tourist_detail, back_populates="tourists_info",
@@ -22,7 +26,8 @@ class TouristInfoModel(db.Model):
             "DetailModel", secondary=tourist_detail, viewonly=True)
 
     def json(self):
-        return {'tourist_id': self.id, 'nationality': self.nationality, 'gender': self.gender}
+        return {'tourist_id': self.id, 'nationality': self.nationality,
+                'gender': self.gender}
 
     def with_details_json(self):
         return {**self.json(), 'tour_details':[tour_details.json() for tour_details in self.details_info]}
