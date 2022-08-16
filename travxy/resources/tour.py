@@ -2,6 +2,8 @@ from flask_restful import Resource, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from travxy.models.tour import TourModel
 from travxy.models.tourist import TouristInfoModel
+from travxy.helpers.pagination import get_paginated_list
+from flask import jsonify
 
 class Tour(Resource):
     @jwt_required()
@@ -22,8 +24,10 @@ class Tour(Resource):
 class TourList(Resource):
     @jwt_required()
     def get(self):
-        return {'tours':[tour.json() for tour in TourModel.find_all()]}
-
+        tours = [tour.json() for tour in TourModel.find_all()]
+        return get_paginated_list(tours, '/tours',
+                                        start=request.args.get('start', 1),
+                                        limit=request.args.get('limit', 20))
 
 class AdminForTour(Resource):
     @jwt_required()
