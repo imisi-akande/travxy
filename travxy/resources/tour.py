@@ -25,7 +25,7 @@ class TourList(Resource):
         return {'tours':[tour.json() for tour in TourModel.find_all()]}
 
 
-class AdminTourList(Resource):
+class AdminForTour(Resource):
     @jwt_required()
     def post(self):
         user_id = get_jwt_identity()
