@@ -1,6 +1,7 @@
-from flask_jwt_extended import get_jwt_identity, jwt_required, get_jwt_identity
+from flask_jwt_extended import get_jwt_identity, jwt_required
 from flask_restful import Resource, request
 from travxy.models.category import CategoryModel
+from travxy.models.tourist import TouristInfoModel
 
 class Category(Resource):
     @jwt_required()
@@ -27,8 +28,13 @@ class CategoryList(Resource):
         return {'categories': [category['name'] for category in categories],
                 'message': 'More information available if you log in'}
 
+class AdminCategoryList(Resource):
     @jwt_required()
     def post(self):
+        user_id = get_jwt_identity()
+        current_user = TouristInfoModel.find_by_user_id(user_id)
+        if current_user.role_id != 1 and current_user.role_id != 2:
+            return {'message': 'Unauthorized User'}, 401
         name = request.json.get('name')
         if not name:
             return {'message': "Name required"}, 400

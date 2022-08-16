@@ -6,9 +6,10 @@ from flask_jwt_extended import JWTManager
 from .resources.role import RoleList
 from travxy.resources.user import (UserRegister, User, UserLogin, UserLogout, 
                                     UserList, TokenRefresh)
-from travxy.resources.tour import Tour, TourList
-from travxy.resources.category import Category, CategoryList
-from travxy.resources.tourist import TouristDetail, TouristList
+from travxy.resources.tour import Tour, TourList, AdminForTour
+from travxy.resources.category import Category, CategoryList, AdminCategoryList
+from travxy.resources.tourist import (TouristDetail, TouristList, 
+                                    AdminTouristList, AdminForSpecificTourist)
 from travxy.resources.detail import DetailList, Detail
 from travxy.resources.experience import TouristExperienceList, TouristExperience
 from travxy.resources.role import RoleList
@@ -67,21 +68,27 @@ def create_app(env_name):
 
     api.add_resource(Category, '/category/<int:id>')
     api.add_resource(CategoryList, '/categories')
+    api.add_resource(AdminCategoryList, '/admin/category')
     api.add_resource(Tour, '/tour/<int:tour_id>')
     api.add_resource(TourList, '/tours')
+    api.add_resource(AdminForTour, '/admin/tour')
     api.add_resource(UserRegister, '/register')
-    api.add_resource(User, '/user/<user_id>')
+    api.add_resource(User, '/user/<int:user_id>')
     api.add_resource(UserLogin, '/login')
     api.add_resource(UserLogout, '/logout')
     api.add_resource(UserList, '/users')
     api.add_resource(TokenRefresh, '/refresh')
-    api.add_resource(TouristList, '/tourists')
+    api.add_resource(TouristList,  '/tourists')
+    api.add_resource(AdminTouristList, '/admin/tourists')
+    api.add_resource(AdminForSpecificTourist, '/admin/tourist/<int:tourist_id>')
+
     api.add_resource(DetailList, '/details')
     api.add_resource(Detail, '/detail')
 
     api.add_resource(TouristDetail, '/tourist-details')
     api.add_resource(TouristExperienceList, '/tourists-experience')
     api.add_resource(TouristExperience, '/tourist-experience')
+
     api.add_resource(RoleList, '/roles')
 
     return app
