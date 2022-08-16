@@ -2,6 +2,7 @@ from flask_restful import Resource, request
 from datetime import timedelta
 
 from travxy.models.user import UserModel
+from travxy.models.tourist import TouristInfoModel
 from flask_jwt_extended import (create_access_token, create_refresh_token, 
                                 get_jwt_identity, jwt_required, get_jwt)
 
@@ -24,24 +25,27 @@ class UserRegister(Resource):
 
 
 class User(Resource):
-    @classmethod
-    def get(cls, user_id):
-        user = UserModel.find_by_id(user_id)
-        if not user:
-            return {'message': 'User not found'}, 404
-        return user.json()
+    @jwt_required()
+    def get(self, user_id):
+        current_identity = get_jwt_identity()
+        tourist_user = TouristInfoModel.find_by_user_id(current_identity)
+        if (current_identity) and (tourist_user.role_id == 1 or tourist_user.role_id == 2):
+            user = UserModel.find_by_id(user_id)
+            if not user:
+                return {'message': 'User not found'}, 404
+            return user.json()
+        return {'message': 'Unauthorized User'}
 
-    @classmethod
-    def delete(cls, user_id):
+    def delete(self, user_id):
         user = UserModel.find_by_id(user_id)
         if not user:
             return {'message': 'User not found'}, 404
         user.delete_from_db()
         return {'message': 'User deleted succesfully'}, 200
 
+
 class UserLogin(Resource):
-    @classmethod
-    def post(cls):
+    def post(self):
         email = request.json.get('email')
         password = request.json.get('password')
         user = UserModel.find_by_email(email)
@@ -65,9 +69,14 @@ class UserLogout(Resource):
         return {"message": "Successfully logged out"}, 200
 
 class UserList(Resource):
+    @jwt_required()
     def get(self):
-        categories = {'users': [user.json() for user in UserModel.query.all()]}
-        return categories
+        current_identity = get_jwt_identity()
+        tourist_user = TouristInfoModel.find_by_user_id(current_identity)
+        if (current_identity) and (tourist_user.role_id == 1 or tourist_user.role_id == 2):
+            users = {'users': [user.json() for user in UserModel.query.all()]}
+            return users
+        return {'message': 'Unauthorized User'}, 401
 
 class TokenRefresh(Resource):
     @jwt_required(refresh=True)
