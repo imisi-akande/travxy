@@ -25,7 +25,7 @@ except psycopg2.DatabaseError as e:
         raise e
 
 user_cursor = connection.cursor()
-insert_user_query = 'insert into users (email, username, password) values %s' 
+insert_user_query = 'insert into users (email, username, password, isactive) values %s' 
 psycopg2.extras.execute_values(
     user_cursor, insert_user_query, user_tuple, template=None, page_size=100
 )

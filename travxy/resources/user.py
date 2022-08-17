@@ -1,6 +1,5 @@
 from flask_restful import Resource, request
 from datetime import timedelta
-
 from travxy.models.user import UserModel
 from travxy.models.tourist import TouristInfoModel
 from flask_jwt_extended import (create_access_token, create_refresh_token, 
@@ -9,7 +8,6 @@ from flask_jwt_extended import (create_access_token, create_refresh_token,
 from travxy.blocklist import BLOCKLIST
 
 class UserRegister(Resource):
-
     def post(self):
         email = request.json.get('email')
         if UserModel.find_by_email(email):
@@ -23,12 +21,13 @@ class UserRegister(Resource):
             user.save_to_db()
             return {"message": "User created succesfully"}, 201
 
-
-class User(Resource):
+class AdminGetUser(Resource):
     @jwt_required()
     def get(self, user_id):
         current_identity = get_jwt_identity()
         tourist_user = TouristInfoModel.find_by_user_id(current_identity)
+        if tourist_user is None:
+            return {'message': 'You must register as a tourist to see other tourists'}
         if (current_identity) and (tourist_user.role_id == 1 or tourist_user.role_id == 2):
             user = UserModel.find_by_id(user_id)
             if not user:
@@ -36,13 +35,53 @@ class User(Resource):
             return user.json()
         return {'message': 'Unauthorized User'}
 
+    @jwt_required()
     def delete(self, user_id):
+        user_instance = UserModel.query.get(user_id)
+        if user_instance is None or user_instance.isactive==False:
+            return {'message': 'User does not exist'}, 404
+        current_identity = get_jwt_identity()
+        current_user = TouristInfoModel.find_by_user_id(current_identity)
+
+        if current_identity is None:
+            return {'message': 'User must be a registered tourist'}
+        if current_user.role_id != 1 and current_user.role_id != 2:
+            return {'message': 'Unauthorized User'}
+
+        tourist_instance = TouristInfoModel.find_by_user_id(user_id)
+        if current_user.role_id != 1 and tourist_instance.role_id == 1:
+            return {'message': 'Only super admins are allowed'}, 400
+
+        if current_user.role_id == 2 and tourist_instance.role_id ==2:
+            return {'message': 'Admin cannot delete self or other Admins'}, 400
+
+        user_instance.isactive = False
+        user_instance.save_to_db()
+        return {'message': 'User deleted succesfully'}, 200
+
+class User(Resource):
+    @jwt_required()
+    def get(self, user_id):
+        current_identity = get_jwt_identity()
+        tourist_user = TouristInfoModel.find_by_user_id(current_identity)
+        if tourist_user is None:
+            return {'message': 'You must register as a tourist to see other tourists'}
         user = UserModel.find_by_id(user_id)
         if not user:
             return {'message': 'User not found'}, 404
-        user.delete_from_db()
-        return {'message': 'User deleted succesfully'}, 200
+        return user.json()
 
+    @jwt_required()
+    def delete(self, user_id):
+        current_identity = get_jwt_identity()
+        user = UserModel.find_by_id(user_id)
+        if not user or user.isactive == False:
+            return {'message': 'User not found'}, 404
+        if user.id != current_identity:
+            return {'message': 'Unauthorized User'}
+        user.isactive = False
+        user.save_to_db()
+        return {'message': 'User deleted succesfully'}, 200
 
 class UserLogin(Resource):
     def post(self):
@@ -68,15 +107,29 @@ class UserLogout(Resource):
         BLOCKLIST.add(jti)
         return {"message": "Successfully logged out"}, 200
 
+class AdminGetUserList(Resource):
+    @jwt_required()
+    def get(self):
+        current_identity = get_jwt_identity()
+        tourist_user = TouristInfoModel.find_by_user_id(current_identity)
+        if tourist_user is None:
+            return {'message': 'You must register as a tourist to view all other tourists'}
+        if (current_identity) and (tourist_user.role_id == 1 or tourist_user.role_id == 2):
+            users = {'users': [user.json() for user in UserModel.query.all()]}
+            return users
+        return {'message': 'Unauthorized User'}, 401
+
 class UserList(Resource):
     @jwt_required()
     def get(self):
         current_identity = get_jwt_identity()
         tourist_user = TouristInfoModel.find_by_user_id(current_identity)
-        if (current_identity) and (tourist_user.role_id == 1 or tourist_user.role_id == 2):
-            users = {'users': [user.json() for user in UserModel.query.all()]}
-            return users
-        return {'message': 'Unauthorized User'}, 401
+        if tourist_user is None:
+            return {'message': 'You must register as a tourist to view all other tourists'}
+        user_instance = UserModel.query.join(TouristInfoModel, UserModel.tourist
+                                ).filter(UserModel.id==TouristInfoModel.user_id).all()
+        user = [user.user_tourist_json() for user in user_instance]
+        return user
 
 class TokenRefresh(Resource):
     @jwt_required(refresh=True)

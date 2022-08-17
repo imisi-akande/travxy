@@ -4,8 +4,9 @@ from flask_restful import Api
 from travxy.db import db
 from flask_jwt_extended import JWTManager
 from .resources.role import RoleList
-from travxy.resources.user import (UserRegister, User, UserLogin, UserLogout, 
-                                    UserList, TokenRefresh)
+from travxy.resources.user import (UserRegister, UserLogin, UserLogout, 
+                                     TokenRefresh, AdminGetUserList,
+                                    AdminGetUser, UserList, User)
 from travxy.resources.tour import Tour, TourList, AdminForTour
 from travxy.resources.category import Category, CategoryList, AdminCategoryList
 from travxy.resources.tourist import (TouristDetail, TouristList, 
@@ -77,6 +78,8 @@ def create_app(env_name):
     api.add_resource(UserLogin, '/login')
     api.add_resource(UserLogout, '/logout')
     api.add_resource(UserList, '/users')
+    api.add_resource(AdminGetUserList, '/admin/users')
+    api.add_resource(AdminGetUser, '/admin/user/<int:user_id>')
     api.add_resource(TokenRefresh, '/refresh')
     api.add_resource(TouristList,  '/tourists')
     api.add_resource(AdminTouristList, '/admin/tourists')
