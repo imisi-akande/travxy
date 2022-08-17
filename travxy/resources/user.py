@@ -43,7 +43,7 @@ class AdminGetUser(Resource):
         current_identity = get_jwt_identity()
         current_user = TouristInfoModel.find_by_user_id(current_identity)
 
-        if current_identity is None:
+        if current_user is None:
             return {'message': 'User must be a registered tourist'}
         if current_user.role_id != 1 and current_user.role_id != 2:
             return {'message': 'Unauthorized User'}

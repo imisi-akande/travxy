@@ -29,6 +29,9 @@ class TouristInfoModel(db.Model):
         return {'tourist_id': self.id, 'nationality': self.nationality,
                 'gender': self.gender}
 
+    def json_with_user_detail(self):
+        return {**self.json(), 'user_detail': self.user.json()}
+        
     def json_with_tourist_status(self):
         return {'nationality': self.nationality,
                 'gender': self.gender}
