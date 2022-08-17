@@ -8,8 +8,8 @@ class UserModel(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), nullable=False)
+    isactive = db.Column(db.Boolean, default=True, nullable=False)
     tourist = db.relationship("TouristInfoModel", back_populates="user", uselist=False)
-    
 
     def __init__(self, username, email, password):
         self.username = username
@@ -27,6 +27,10 @@ class UserModel(db.Model):
             'email': self.email
         }
 
+    def user_tourist_json(self):
+        return {
+            'username': self.username, 'tourist_status': self.tourist.json_with_tourist_status()
+        }
     def with_tourist_json(self):
         return {**self.json(), 'tourist_id': self.id}
 
