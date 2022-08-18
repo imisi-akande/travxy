@@ -107,7 +107,9 @@ class Detail(Resource):
 class DetailList(Resource):
     @jwt_required()
     def get(self):
-        detail_instances = DetailModel.query.options(joinedload('tourists'))
+        #detail_instances = DetailModel.query.options(joinedload('tourists'))
+        detail_instances = DetailModel.query.join(TouristInfoModel, UserModel).filter(UserModel.isactive==True).all()
+
         details = [detail.with_tourist_json() for detail in detail_instances]
         return details
 
