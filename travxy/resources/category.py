@@ -11,13 +11,6 @@ class Category(Resource):
             return category.with_tour_json()
         return {'message': 'Category not found'}, 404
 
-    @jwt_required(fresh=True)
-    def delete(self, id):
-        category = CategoryModel.find_by_id(id)
-        if category:
-            category.delete_from_db()
-        return {'message': 'Category deleted'}
-
 class CategoryList(Resource):
     @jwt_required(optional=True)
     def get(self):
@@ -47,3 +40,37 @@ class AdminCategoryList(Resource):
         except:
             return {'message': 'An error occured while creating category'}, 500
         return category.json(), 201
+
+    @jwt_required()
+    def put(self):
+        user_id = get_jwt_identity()
+        current_user = TouristInfoModel.find_by_user_id(user_id)
+        if current_user.role_id != 1 and current_user.role_id != 2:
+            return {'message': 'Unauthorized User'}, 401
+        id = request.json.get('id')
+        name = request.json.get('name')
+        category_instance = CategoryModel.query.get(id)
+        category_instance.name = name
+        try:
+            category_instance.save_to_db()
+        except:
+            return {'message': 'An error occured while updating category'}, 500
+        return category_instance.json(), 201
+
+class AdminCategory(Resource):
+    @jwt_required(fresh=True)
+    def delete(self, id):
+        user_id = get_jwt_identity()
+        current_user = TouristInfoModel.find_by_user_id(user_id)
+        if not current_user:
+            return {'message': 'User must be a registered tourist'}
+        if current_user.role_id != 1 and current_user.role_id != 2:
+            return {'message': 'Unauthorized User'}, 401
+        category = CategoryModel.find_by_id(id)
+        if category is None:
+            return {'message': 'Category does not exist'}, 400
+        try:
+            category.delete_from_db()
+        except:
+            return {'message': 'An error occured while deleting category'}, 500
+        return {'message': 'Category deleted'}

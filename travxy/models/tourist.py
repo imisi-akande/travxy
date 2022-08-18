@@ -29,16 +29,22 @@ class TouristInfoModel(db.Model):
         return {'tourist_id': self.id, 'nationality': self.nationality,
                 'gender': self.gender}
 
+    def from_admin_json(self):
+        return {'tourist_id': self.id, 'nationality': self.nationality,
+                'gender': self.gender}
+
+    def json_with_user_name(self):
+        return {**self.json(), 'user_detail': self.user.username_json()}
+
     def json_with_user_detail(self):
         return {**self.json(), 'user_detail': self.user.json()}
-        
+
     def json_with_tourist_status(self):
         return {'nationality': self.nationality,
                 'gender': self.gender}
 
     def json_with_role(self):
-        return {'tourist_id': self.id, 'nationality': self.nationality,
-                'gender': self.gender, 'role_id': self.role_id}
+        return {**self.json_with_user_detail(), 'role_id': self.role_id}
 
     def with_details_json(self):
         return {**self.json(), 'tour_details':[tour_details.json() for tour_details in self.details_info]}

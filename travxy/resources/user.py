@@ -1,8 +1,9 @@
 from flask_restful import Resource, request
 from datetime import timedelta
+
 from travxy.models.user import UserModel
 from travxy.models.tourist import TouristInfoModel
-from flask_jwt_extended import (create_access_token, create_refresh_token, 
+from flask_jwt_extended import (create_access_token, create_refresh_token,
                                 get_jwt_identity, jwt_required, get_jwt)
 
 from travxy.blocklist import BLOCKLIST
@@ -10,13 +11,16 @@ from travxy.blocklist import BLOCKLIST
 class UserRegister(Resource):
     def post(self):
         email = request.json.get('email')
+        user = UserModel.find_by_email(email)
         if UserModel.find_by_email(email):
             return {"message":"User already exist"}, 400
         else:
             username = request.json.get('username')
             email = request.json.get('email')
             password = request.json.get('password')
-            data = {'username':username, 'email':email, 'password':password}
+            hash_password= UserModel.generate_hash(password)
+            data = {'username':username, 'email':email,
+                                'password':hash_password}
             user = UserModel(**data)
             user.save_to_db()
             return {"message": "User created succesfully"}, 201
@@ -27,12 +31,21 @@ class AdminGetUser(Resource):
         current_identity = get_jwt_identity()
         tourist_user = TouristInfoModel.find_by_user_id(current_identity)
         if tourist_user is None:
-            return {'message': 'You must register as a tourist to see other tourists'}
-        if (current_identity) and (tourist_user.role_id == 1 or tourist_user.role_id == 2):
+            return {'message':
+                        'You must register as a tourist to see other tourists'}
+        if (current_identity) and (tourist_user.role_id == 1
+                                    or tourist_user.role_id == 2):
             user = UserModel.find_by_id(user_id)
             if not user:
                 return {'message': 'User not found'}, 404
-            return user.json()
+            tourist_instance = TouristInfoModel.find_by_user_id(user_id)
+            user_result = {'id': user.id,
+                            'username': user.username,
+                            'email': user.email,
+                            'isactive': user.isactive,
+                            'nationality': tourist_instance.nationality,
+                            'gender': tourist_instance.gender }
+            return user_result
         return {'message': 'Unauthorized User'}
 
     @jwt_required()
@@ -65,11 +78,12 @@ class User(Resource):
         current_identity = get_jwt_identity()
         tourist_user = TouristInfoModel.find_by_user_id(current_identity)
         if tourist_user is None:
-            return {'message': 'You must register as a tourist to see other tourists'}
+            return {'message':
+                        'You must register as a tourist to see other tourists'}
         user = UserModel.find_by_id(user_id)
-        if not user:
+        if not user or user.isactive==False:
             return {'message': 'User not found'}, 404
-        return user.json()
+        return user.username_json()
 
     @jwt_required()
     def delete(self, user_id):
@@ -88,17 +102,19 @@ class UserLogin(Resource):
         email = request.json.get('email')
         password = request.json.get('password')
         user = UserModel.find_by_email(email)
-
+        if not user:
+            return {'message': 'Invalid Credentials'}, 401
+        if user.isactive==False:
+            return {'message': 'User account does not exist'}
         if user and user.check_hash(password):
-            access_token = create_access_token(identity=user.id, fresh=timedelta(minutes=15))
+            access_token = create_access_token(identity=user.id,
+                                                fresh=timedelta(minutes=15))
             refresh_token = create_refresh_token(user.id)
             return {
                 'message':'Login suceeded',
                 'access_token': access_token,
                 'refresh_token': refresh_token
             }, 200
-
-        return {'message': 'Invalid Credentials'}, 401
 
 class UserLogout(Resource):
     @jwt_required()
@@ -113,9 +129,15 @@ class AdminGetUserList(Resource):
         current_identity = get_jwt_identity()
         tourist_user = TouristInfoModel.find_by_user_id(current_identity)
         if tourist_user is None:
-            return {'message': 'You must register as a tourist to view all other tourists'}
-        if (current_identity) and (tourist_user.role_id == 1 or tourist_user.role_id == 2):
-            users = {'users': [user.json() for user in UserModel.query.all()]}
+            return {'message':
+                    'You must register as a tourist to view all other tourists'}
+        if (current_identity) and (tourist_user.role_id == 1
+                                    or tourist_user.role_id == 2):
+            user_instance = UserModel.query.join(
+                                TouristInfoModel, UserModel.tourist).filter(
+                                UserModel.id==TouristInfoModel.user_id).all()
+            users = {'users': [user.for_admin_with_tourist_json()
+                                for user in user_instance]}
             return users
         return {'message': 'Unauthorized User'}, 401
 
@@ -125,11 +147,11 @@ class UserList(Resource):
         current_identity = get_jwt_identity()
         tourist_user = TouristInfoModel.find_by_user_id(current_identity)
         if tourist_user is None:
-            return {'message': 'You must register as a tourist to view all other tourists'}
-        user_instance = UserModel.query.join(TouristInfoModel, UserModel.tourist
-                                ).filter(UserModel.id==TouristInfoModel.user_id).all()
-        user = [user.user_tourist_json() for user in user_instance]
-        return user
+            return {'message':
+                    'You must register as a tourist to view all other tourists'}
+        users = {'users': [user.username_json() for user in
+                        UserModel.query.filter(UserModel.isactive==True).all()]}
+        return users
 
 class TokenRefresh(Resource):
     @jwt_required(refresh=True)

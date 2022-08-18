@@ -10,7 +10,7 @@ class Tour(Resource):
     def get(self, tour_id):
         tour = TourModel.find_by_id(tour_id)
         if tour:
-            return tour.json()
+            return tour.with_category_json()
         return {'message': 'Tour does not exist'}, 404
 
     @jwt_required()
@@ -24,7 +24,7 @@ class Tour(Resource):
 class TourList(Resource):
     @jwt_required()
     def get(self):
-        tours = [tour.json() for tour in TourModel.find_all()]
+        tours = [tour.with_category_json() for tour in TourModel.find_all()]
         return get_paginated_list(tours, '/tours',
                                         start=request.args.get('start', 1),
                                         limit=request.args.get('limit', 20))

@@ -14,7 +14,11 @@ class TourModel(db.Model):
     category = db.relationship('CategoryModel', back_populates="tours")
 
     def json(self):
-        return {'name': self.name, 'location': self.location, 'country': self.country, 'about': self.about, 'category_id': self.category_id}
+        return {'tour_id': self.id, 'name': self.name, 'location': self.location, 'country': self.country, 'about': self.about}
+
+    def with_category_json(self):
+        return {'tour_id': self.id, 'name': self.name, 'location': self.location, 'country': self.country, 'about': self.about, 'category_id': self.category_id}
+
 
     @classmethod
     def find_by_name(cls, name):
