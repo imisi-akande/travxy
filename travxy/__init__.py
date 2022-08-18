@@ -89,7 +89,7 @@ def create_app(env_name):
     api.add_resource(AdminForSpecificTourist, '/admin/tourist/<int:tourist_id>')
 
     api.add_resource(DetailList, '/details')
-    api.add_resource(Detail, '/detail')
+    api.add_resource(Detail, '/detail/<int:detail_id>')
 
     api.add_resource(TouristDetail, '/tourist-details')
     api.add_resource(TouristExperienceList, '/tourists-experience')
