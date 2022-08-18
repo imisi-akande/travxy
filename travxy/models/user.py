@@ -11,35 +11,28 @@ class UserModel(db.Model):
     isactive = db.Column(db.Boolean, default=True, nullable=False)
     tourist = db.relationship("TouristInfoModel", back_populates="user", uselist=False)
 
-    def __init__(self, username, email, password):
-        self.username = username
-        self.email = email
-        self.password = self.__generate_hash(password)
-
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
 
     def json(self):
         return {
-            'id': self.id,
-            'username': self.username,
-            'email': self.email
-        }
-
-    def user_tourist_json(self):
+                'id': self.id,
+                'username': self.username,
+                'email': self.email
+                }
+    def username_json(self):
         return {
-            'username': self.username, 'tourist_status': self.tourist.json_with_tourist_status()
-        }
-    def with_tourist_json(self):
-        return {**self.json(), 'tourist_id': self.id}
+                'user_id':self.id,
+                'username': self.username,
+                }
+
+    def for_admin_with_tourist_json(self):
+        return {**self.json(), 'tourist_status': self.tourist.json_with_tourist_status()}
 
     def delete_from_db(self):
         db.session.delete(self)
         db.session.commit()
-
-    def __generate_hash(self, password):
-        return bcrypt.generate_password_hash(password, rounds=10).decode("utf-8")
 
     def check_hash(self, password):
         return bcrypt.check_password_hash(self.password, password)
@@ -55,3 +48,7 @@ class UserModel(db.Model):
     @classmethod
     def find_by_id(cls, _id):
         return cls.query.filter_by(id=_id).first()
+
+    @staticmethod
+    def generate_hash(password):
+        return bcrypt.generate_password_hash(password, rounds=10).decode("utf-8")

@@ -6,8 +6,23 @@ from flask_restful import Resource, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy.orm import joinedload
 
+class Tourist(Resource):
+    @jwt_required()
+    def get(self, tourist_id):
+        user_id = get_jwt_identity()
+        current_user = TouristInfoModel.find_by_user_id(user_id)
+        if current_user is None:
+            return {'message': 'User must be a registered tourist'}
+        tourist = TouristInfoModel.query.get(tourist_id)
+        if tourist is None or tourist.user.isactive == False:
+            return {'message': 'tourist does not exist'}, 404
+        return tourist.json_with_user_detail()
 
 class TouristList(Resource):
+    @jwt_required()
+    def get(self):
+        tourists = TouristInfoModel.query.join(UserModel, TouristInfoModel.user).filter(UserModel.isactive==True).all()
+        return {'tourists': [tourist.json_with_user_name() for tourist in tourists]}
 
     @jwt_required()
     def post(self):
@@ -85,7 +100,8 @@ class AdminTouristList(Resource):
         user_id = get_jwt_identity()
         tourist_user = TouristInfoModel.find_by_user_id(user_id)
         if tourist_user.role_id == 1 or tourist_user.role_id == 2:
-            tourists = TouristInfoModel.find_all()
+            #tourists = TouristInfoModel.find_all()
+            tourists = TouristInfoModel.query.join(UserModel, TouristInfoModel.user).all()
             return {'tourists': [tourist.json_with_role() for tourist in tourists]}
         return {'message': 'Unauthorized User'}
 

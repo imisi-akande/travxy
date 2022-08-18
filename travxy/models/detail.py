@@ -35,7 +35,7 @@ class DetailModel(db.Model):
 
 
     def with_tourist_json(self):
-        return {**self.json(), 'tourists': [tourist.json() for tourist in self.tourists]}
+        return {**self.json(), 'tourists': [tourist.json_with_user_name() for tourist in self.tourists]}
 
     @classmethod
     def find_all(cls):

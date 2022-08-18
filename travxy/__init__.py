@@ -8,8 +8,9 @@ from travxy.resources.user import (UserRegister, UserLogin, UserLogout,
                                      TokenRefresh, AdminGetUserList,
                                     AdminGetUser, UserList, User)
 from travxy.resources.tour import Tour, TourList, AdminForTour
-from travxy.resources.category import Category, CategoryList, AdminCategoryList
-from travxy.resources.tourist import (TouristDetail, TouristList, 
+from travxy.resources.category import (Category, CategoryList, 
+                                        AdminCategoryList, AdminCategory)
+from travxy.resources.tourist import (Tourist, TouristDetail, TouristList, 
                                     AdminTouristList, AdminForSpecificTourist)
 from travxy.resources.detail import DetailList, Detail
 from travxy.resources.experience import TouristExperienceList, TouristExperience
@@ -70,6 +71,7 @@ def create_app(env_name):
     api.add_resource(Category, '/category/<int:id>')
     api.add_resource(CategoryList, '/categories')
     api.add_resource(AdminCategoryList, '/admin/category')
+    api.add_resource(AdminCategory, '/admin/category/<int:id>')
     api.add_resource(Tour, '/tour/<int:tour_id>')
     api.add_resource(TourList, '/tours')
     api.add_resource(AdminForTour, '/admin/tour')
@@ -81,6 +83,7 @@ def create_app(env_name):
     api.add_resource(AdminGetUserList, '/admin/users')
     api.add_resource(AdminGetUser, '/admin/user/<int:user_id>')
     api.add_resource(TokenRefresh, '/refresh')
+    api.add_resource(Tourist, '/tourist/<int:tourist_id>')
     api.add_resource(TouristList,  '/tourists')
     api.add_resource(AdminTouristList, '/admin/tourists')
     api.add_resource(AdminForSpecificTourist, '/admin/tourist/<int:tourist_id>')
