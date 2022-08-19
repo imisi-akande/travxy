@@ -15,18 +15,16 @@ class TouristExperienceModel(db.Model):
     def json(self):
         return {'tourist_id': self.tourist_id, 'detail_id': self.detail_id,
                 'comment': self.comment, 'rating': self.rating,
-                'duration': self.duration, 'time_created': str(self.time_created),
+                'duration': self.duration,
+                'time_created': str(self.time_created)
                 }
 
     def with_time_updated_json(self):
         return {'tourist_id': self.tourist_id, 'detail_id': self.detail_id,
                 'comment': self.comment, 'rating': self.rating,
-                'duration': self.duration, 'time_created': str(self.time_created),
+                'duration': self.duration,
+                'time_created': str(self.time_created),
                 'time_updated': str(self.time_updated)}
-
-    @classmethod
-    def find_by_id(cls, id):
-        return cls.query.filter_by(detail_id=id).first()
 
     @classmethod
     def find_all(cls):
@@ -34,4 +32,8 @@ class TouristExperienceModel(db.Model):
 
     def save_to_db(self):
         db.session.add(self)
+        db.session.commit()
+
+    def delete_from_db(self):
+        db.session.delete(self)
         db.session.commit()

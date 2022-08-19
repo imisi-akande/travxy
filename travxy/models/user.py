@@ -9,7 +9,8 @@ class UserModel(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), nullable=False)
     isactive = db.Column(db.Boolean, default=True, nullable=False)
-    tourist = db.relationship("TouristInfoModel", back_populates="user", uselist=False)
+    tourist = db.relationship("TouristInfoModel", back_populates="user",
+                                uselist=False)
 
     def save_to_db(self):
         db.session.add(self)
@@ -28,7 +29,8 @@ class UserModel(db.Model):
                 }
 
     def for_admin_with_tourist_json(self):
-        return {**self.json(), 'tourist_status': self.tourist.json_with_tourist_status()}
+        return {**self.json(),
+                    'tourist_status': self.tourist.json_with_tourist_status()}
 
     def delete_from_db(self):
         db.session.delete(self)
@@ -51,4 +53,5 @@ class UserModel(db.Model):
 
     @staticmethod
     def generate_hash(password):
-        return bcrypt.generate_password_hash(password, rounds=10).decode("utf-8")
+        return bcrypt.generate_password_hash(password,
+                                            rounds=10).decode("utf-8")

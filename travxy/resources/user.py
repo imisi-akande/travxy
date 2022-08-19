@@ -149,8 +149,9 @@ class UserList(Resource):
         if tourist_user is None:
             return {'message':
                     'You must register as a tourist to view all other tourists'}
-        users = {'users': [user.username_json() for user in
-                        UserModel.query.filter(UserModel.isactive==True).all()]}
+        users = {'users': [user.username_json()
+                            for user in UserModel.query.filter(
+                                UserModel.isactive==True).all()]}
         return users
 
 class TokenRefresh(Resource):

@@ -10,7 +10,8 @@ class RoleModel(db.Model):
 
     def json(self):
         return {'id': self.id, 'name': self.name,
-                'tourists': [tourist.json_with_user_detail() for tourist in self.tourists.all()]}
+                'tourists': [tourist.json_with_user_detail()
+                                for tourist in self.tourists.all()]}
     @classmethod
     def find_by_id(cls, id):
         return cls.query.filter_by(id=id).first()

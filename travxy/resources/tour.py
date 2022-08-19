@@ -3,7 +3,6 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from travxy.models.tour import TourModel
 from travxy.models.tourist import TouristInfoModel
 from travxy.helpers.pagination import get_paginated_list
-from flask import jsonify
 
 class Tour(Resource):
     @jwt_required()
@@ -19,7 +18,7 @@ class Tour(Resource):
         if tour:
             tour.delete_from_db()
             return{'message': 'Tour deleted succesfully'}, 200
-        return {'message': 'Tour does not exist'}
+        return {'message': 'Tour does not exist'}, 404
 
 class TourList(Resource):
     @jwt_required()
@@ -50,7 +49,8 @@ class AdminForTour(Resource):
         try:
             tour.save_to_db()
         except:
-            return{'message': 'An error occured while trying to insert the tour'}, 500
+            return{'message':
+                    'An error occured while trying to insert the tour'}, 500
         return tour.json(), 201
 
     @jwt_required()
