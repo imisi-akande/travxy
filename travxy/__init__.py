@@ -13,7 +13,8 @@ from travxy.resources.category import (Category, CategoryList,
 from travxy.resources.tourist import (Tourist, TouristDetail, TouristList, 
                                     AdminTouristList, AdminForSpecificTourist)
 from travxy.resources.detail import DetailList, Detail
-from travxy.resources.experience import TouristExperienceList, TouristExperience
+from travxy.resources.experience import (TouristExperienceList, 
+                                    TouristExperience, GetTouristExperience)
 from travxy.resources.role import RoleList
 
 from flask_migrate import Migrate
@@ -94,6 +95,7 @@ def create_app(env_name):
     api.add_resource(TouristDetail, '/tourist-details')
     api.add_resource(TouristExperienceList, '/tourists-experience')
     api.add_resource(TouristExperience, '/tourist-experience')
+    api.add_resource(GetTouristExperience, '/tourist-experience/<int:tourist_id>/<int:detail_id>')
 
     api.add_resource(RoleList, '/roles')
 

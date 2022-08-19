@@ -124,7 +124,6 @@ class Detail(Resource):
             return {'message': 'User is not a registered tourist'}, 401
 
         detail_instance = DetailModel.find_by_id(detail_id)
-        print(detail_instance, 'detail_instance')
         if (detail_instance is None or
                 detail_author.id != detail_instance.travel_buddies_created_by):
             return {'message': 'Detail does not exist'}, 400
@@ -134,10 +133,4 @@ class Detail(Resource):
             return{'message':
                         'An error occured while trying to delete details'}, 500
         return {'message': 'Detail deleted succesfully'}
-
-    
-
-
-
-
 
