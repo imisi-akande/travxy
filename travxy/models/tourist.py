@@ -12,14 +12,17 @@ class TouristInfoModel(db.Model):
                                        name="gender_level", nullable=False,
                                        create_type=False))
 
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"))
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id", 
+                        ondelete="CASCADE"))
     user = db.relationship("UserModel", back_populates="tourist")
-    role_id = db.Column(db.Integer, db.ForeignKey("roles.id", ondelete="CASCADE"), default=3)
+    role_id = db.Column(db.Integer, db.ForeignKey("roles.id", 
+                        ondelete="CASCADE"), default=3)
     role = db.relationship("RoleModel", back_populates = "tourists")
 
 
     tour_details_of_tourists = db.relationship(
-            "DetailModel", secondary=tourist_detail, back_populates="tourists_info",
+            "DetailModel", secondary=tourist_detail,
+            back_populates="tourists_info",
             lazy='dynamic', cascade="all, delete")
 
     details_info = db.relationship(
@@ -47,7 +50,8 @@ class TouristInfoModel(db.Model):
         return {**self.json_with_user_detail(), 'role_id': self.role_id}
 
     def with_details_json(self):
-        return {**self.json(), 'tour_details':[tour_details.json() for tour_details in self.details_info]}
+        return {**self.json(), 'tour_details':[tour_details.json()
+                    for tour_details in self.details_info]}
 
     @classmethod
     def find_by_user_id(cls, user_id):

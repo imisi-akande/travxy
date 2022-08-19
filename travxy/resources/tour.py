@@ -3,7 +3,6 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from travxy.models.tour import TourModel
 from travxy.models.tourist import TouristInfoModel
 from travxy.helpers.pagination import get_paginated_list
-from flask import jsonify
 
 class Tour(Resource):
     @jwt_required()

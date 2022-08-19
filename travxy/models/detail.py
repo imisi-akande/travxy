@@ -12,17 +12,22 @@ class DetailModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     departure = db.Column(db.String(80), nullable=False)
     transportation = db.Column(ENUM("Air", "Road", "Rail", "Water",
-                                       name="transportation_types", nullable=False, create_type=False))
-    travel_buddies_created_by = db.Column(db.Integer, db.ForeignKey('tourists.id', ondelete="CASCADE"))
-    estimated_cost = db.Column(db.Numeric(precision=10, asdecimal=False, decimal_return_scale=None), nullable=False)
+                                       name="transportation_types",
+                                       nullable=False, create_type=False))
+    travel_buddies_created_by = db.Column(db.Integer, db.ForeignKey(
+                                            'tourists.id', ondelete="CASCADE"))
+    estimated_cost = db.Column(db.Numeric(precision=10, asdecimal=False,
+                                            decimal_return_scale=None),
+                                            nullable=False)
     tourists_info = db.relationship(
-        "TouristInfoModel", secondary=tourist_detail, back_populates="tour_details_of_tourists",
-        lazy='dynamic'
-        )
+        "TouristInfoModel", secondary=tourist_detail,
+        back_populates="tour_details_of_tourists",
+        lazy='dynamic')
     tourists = db.relationship(
         "TouristInfoModel", secondary=tourist_detail, viewonly=True
         )
-    tour_id = db.Column(db.Integer, db.ForeignKey('tours.id', ondelete="CASCADE"))
+    tour_id = db.Column(db.Integer, db.ForeignKey('tours.id',
+                                                    ondelete="CASCADE"))
     tour = db.relationship('TourModel', back_populates="details")
 
     def json(self):
@@ -35,7 +40,8 @@ class DetailModel(db.Model):
 
 
     def with_tourist_json(self):
-        return {**self.json(), 'tourists': [tourist.json_with_user_name() for tourist in self.tourists]}
+        return {**self.json(), 'tourists': [tourist.json_with_user_name()
+                                                for tourist in self.tourists]}
 
     @classmethod
     def find_all(cls):

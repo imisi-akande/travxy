@@ -16,7 +16,8 @@ class RoleList(Resource):
                                     RoleModel.tourists).join(UserModel).filter(
                                     RoleModel.id == TouristInfoModel.role_id
                                     ).all()
-        if (current_identity) and (tourist_user.role_id == 1 or tourist_user.role_id == 2):
+        if ((current_identity) and
+                (tourist_user.role_id == 1 or tourist_user.role_id == 2)):
             roles = [role.json() for role in role_instance]
             return roles
         return {'message': 'Unauthorized User'}, 401

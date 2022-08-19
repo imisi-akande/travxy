@@ -1,14 +1,11 @@
 from flask_restful import Resource, request
-from travxy.models.detail import DetailModel
+from travxy.models.detail import DetailModel, tourist_detail
 from travxy.models.user import UserModel
 from travxy.models.tourist import TouristInfoModel
 from travxy.models.tour import TourModel
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
-from sqlalchemy.orm import joinedload
-
 class DetailList(Resource):
-
     @jwt_required()
     def post(self):
         current_identity = get_jwt_identity()
@@ -134,3 +131,25 @@ class Detail(Resource):
                         'An error occured while trying to delete details'}, 500
         return {'message': 'Detail deleted succesfully'}
 
+class GetTouristDetail(Resource):
+    @jwt_required()
+    def get(self, tourist_id, detail_id):
+        current_identity = get_jwt_identity()
+        current_user = TouristInfoModel.find_by_user_id(current_identity)
+        if current_user is None:
+            return {'message': 'User is not a registered tourist'}, 401
+
+        inactive_users = TouristInfoModel.query.join(UserModel).filter(
+                                        UserModel.isactive==False).all()
+        inactive_tourists_list = []
+        for instance in inactive_users:
+            inactive_tourists_list.append(instance.id)
+        detail_instances = DetailModel.query.join(tourist_detail).join(
+                           TouristInfoModel).filter(
+                            (tourist_detail.c.detail_id==detail_id) & (
+                            tourist_detail.c.tourist_id == tourist_id)).filter(
+                            TouristInfoModel.id.notin_(
+                            inactive_tourists_list)).first()
+        if not detail_instances:
+            return {'message': 'Tourist Detail does not exist'}, 400
+        return detail_instances.with_tourist_json()

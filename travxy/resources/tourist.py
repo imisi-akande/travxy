@@ -16,19 +16,23 @@ class Tourist(Resource):
         tourist = TouristInfoModel.query.get(tourist_id)
         if tourist is None or tourist.user.isactive == False:
             return {'message': 'tourist does not exist'}, 404
-        return tourist.json_with_user_detail()
+        return tourist.json_with_user_name()
 
 class TouristList(Resource):
     @jwt_required()
     def get(self):
-        tourists = TouristInfoModel.query.join(UserModel, TouristInfoModel.user).filter(UserModel.isactive==True).all()
-        return {'tourists': [tourist.json_with_user_name() for tourist in tourists]}
+        tourists = TouristInfoModel.query.join(UserModel,
+                                                TouristInfoModel.user).filter(
+                                                UserModel.isactive==True).all()
+        return {'tourists': [tourist.json_with_user_name()
+                            for tourist in tourists]}
 
     @jwt_required()
     def post(self):
         user_id = get_jwt_identity()
         if TouristInfoModel.find_by_user_id(user_id):
-            return {'message': "A tourist with userid '{}' already exists".format(user_id)}, 400
+            return {'message':
+                "A tourist with userid '{}' already exists".format(user_id)}, 400
 
         nationality = request.json.get('nationality')
         gender = request.json.get('gender', 'Neutral')
@@ -84,12 +88,14 @@ class TouristDetail(Resource):
         try:
             tourist_user.save_to_db()
         except:
-            return{'message': 'An error occured while trying to insert details'}, 500
+            return{'message':
+                        'An error occured while trying to insert details'}, 500
         return tourist_user.with_details_json(), 201
 
     @jwt_required()
     def get(self):
-        tourist_instances = TouristInfoModel.query.options(joinedload('details_info'))
+        tourist_instances = TouristInfoModel.query.options(
+                                                    joinedload('details_info'))
         tourists = [tourist.with_details_json() for tourist in tourist_instances]
         return tourists
 
@@ -100,9 +106,10 @@ class AdminTouristList(Resource):
         user_id = get_jwt_identity()
         tourist_user = TouristInfoModel.find_by_user_id(user_id)
         if tourist_user.role_id == 1 or tourist_user.role_id == 2:
-            #tourists = TouristInfoModel.find_all()
-            tourists = TouristInfoModel.query.join(UserModel, TouristInfoModel.user).all()
-            return {'tourists': [tourist.json_with_role() for tourist in tourists]}
+            tourists = TouristInfoModel.query.join(UserModel,
+                                                    TouristInfoModel.user).all()
+            return {'tourists': [tourist.json_with_role()
+                                        for tourist in tourists]}
         return {'message': 'Unauthorized User'}
 
     @jwt_required()
@@ -126,7 +133,8 @@ class AdminTouristList(Resource):
             return {'message': 'user id does not exist'}, 400
 
         if TouristInfoModel.find_by_user_id(user_id):
-            return {'message': "A tourist with userid '{}' already exists".format(user_id)}, 400
+            return {'message': 
+                "A tourist with userid '{}' already exists".format(user_id)}, 400
 
         tourist = TouristInfoModel(nationality=nationality, gender=gender,
                                    user_id=user_id, role_id=role_id)

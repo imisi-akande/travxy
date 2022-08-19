@@ -36,7 +36,8 @@ class TouristExperience(Resource):
         try:
             experience.save_to_db()
         except:
-            return{'message': 'An error occured while trying to insert tourist experience'}
+            return{'message': 
+                    'An error occured while trying to insert tourist experience'}, 500
         return experience.json(), 201
 
     @jwt_required()
@@ -73,7 +74,8 @@ class TouristExperience(Resource):
         try:
             experience_instance.save_to_db()
         except:
-            return{'message': 'An error occured while trying to insert tourist experience'}
+            return{'message': 
+                    'An error occured while trying to insert tourist experience'}, 500
         return experience_instance.json(), 201
 
 class TouristExperienceList(Resource):
@@ -123,7 +125,8 @@ class GetTouristExperience(Resource):
         try:
             experience_instance.delete_from_db()
         except:
-            return{'message': 'An error occured while trying to delete tourist experience'}
+            return{'message': 
+            'An error occured while trying to delete tourist experience'}, 500
         return {'message': 'Experience deleted succesfully'}
 
 

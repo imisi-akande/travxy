@@ -15,13 +15,15 @@ class TouristExperienceModel(db.Model):
     def json(self):
         return {'tourist_id': self.tourist_id, 'detail_id': self.detail_id,
                 'comment': self.comment, 'rating': self.rating,
-                'duration': self.duration, 'time_created': str(self.time_created),
+                'duration': self.duration,
+                'time_created': str(self.time_created)
                 }
 
     def with_time_updated_json(self):
         return {'tourist_id': self.tourist_id, 'detail_id': self.detail_id,
                 'comment': self.comment, 'rating': self.rating,
-                'duration': self.duration, 'time_created': str(self.time_created),
+                'duration': self.duration,
+                'time_created': str(self.time_created),
                 'time_updated': str(self.time_updated)}
 
     @classmethod

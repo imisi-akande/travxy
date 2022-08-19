@@ -15,7 +15,8 @@ class CategoryList(Resource):
     @jwt_required(optional=True)
     def get(self):
         current_identity = get_jwt_identity()
-        categories = [category.with_tour_json() for category in CategoryModel.find_all()]
+        categories = [category.with_tour_json() 
+                        for category in CategoryModel.find_all()]
         if current_identity:
             return {'categories': categories}
         return {'categories': [category['name'] for category in categories],
@@ -32,7 +33,8 @@ class AdminCategoryList(Resource):
         if not name:
             return {'message': "Name required"}, 400
         if CategoryModel.find_by_name(name):
-            return {'message': "A category with name '{}' already exists".format(name)}, 400
+            return {'message':
+                    "A category with name '{}' already exists".format(name)}, 400
 
         category = CategoryModel(name=name)
         try:
