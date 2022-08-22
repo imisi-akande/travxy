@@ -1,4 +1,5 @@
-tourists_tuple = (
+
+INSERT INTO tourists (nationality, gender, user_id, role_id) VALUES
     ('United States of America', 'Female', 1, 1),
     ('Nigeria', 'Female', 2, 2),
     ('Canada', 'Male', 3, 3),
@@ -8,5 +9,4 @@ tourists_tuple = (
     ('Germany', 'Male', 7, 3),
     ('Ghana', 'Female', 8, 3),
     ('United Kingdom', 'Female', 9, 3),
-    ('United States of America', 'Male', 10, 3),
-)
+    ('United States of America', 'Male', 10, 3);

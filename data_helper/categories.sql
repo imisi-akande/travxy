@@ -1,0 +1,18 @@
+INSERT INTO categories (name) VALUES 
+    ('Business'),
+    ('Adventure'),
+    ('Wildlife'),
+    ('Medical'),
+    ('Wellness'),
+    ('Pilgrimage and Spiritual'),
+    ('Cultural'),
+    ('Dark'),
+    ('Culinary'),
+    ('Celibrity'),
+    ('Educational'),
+    ('Cruise'),
+    ('Rural'),
+    ('Beach'),
+    ('Space'),
+    ('Lake'),
+    ('Park');
