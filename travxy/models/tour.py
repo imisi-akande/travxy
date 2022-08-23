@@ -1,5 +1,10 @@
 from travxy.db import db
 
+tour_category = db.Table('tour_category',
+                       db.Column('tour_id', db.Integer, db.ForeignKey('tours.id'), primary_key=True),
+                       db.Column('category_id', db.Integer, db.ForeignKey('categories.id'), primary_key=True)
+                    )
+
 class TourModel(db.Model):
     __tablename__ = 'tours'
     id = db.Column(db.Integer, primary_key=True)
@@ -9,11 +14,13 @@ class TourModel(db.Model):
     about = db.Column(db.String(500), nullable=False)
     details = db.relationship('DetailModel', back_populates='tour',
                                 lazy='dynamic')
+    details_view = db.relationship('DetailModel', back_populates='tour',
+                                viewonly=True)
 
-
-    category_id = db.Column(db.Integer, db.ForeignKey('categories.id',
-                                                        ondelete="CASCADE"))
-    category = db.relationship('CategoryModel', back_populates="tours")
+    categories_info = db.relationship(
+        "CategoryModel", secondary=tour_category,
+        back_populates="tour_details",
+        lazy='dynamic')
 
     def json(self):
         return {'tour_id': self.id, 'name': self.name,
@@ -21,10 +28,7 @@ class TourModel(db.Model):
                 'about': self.about}
 
     def with_category_json(self):
-        return {'tour_id': self.id, 'name': self.name,
-                'location': self.location, 'country': self.country,
-                'about': self.about, 'category_id': self.category_id}
-
+        return {**self.json(), 'category': [category.json() for category in self.categories_info]}
 
     @classmethod
     def find_by_name(cls, name):

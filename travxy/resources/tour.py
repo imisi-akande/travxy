@@ -3,6 +3,8 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from travxy.models.tour import TourModel
 from travxy.models.tourist import TouristInfoModel
 from travxy.helpers.pagination import get_paginated_list
+from sqlalchemy.orm import joinedload
+
 
 class Tour(Resource):
     @jwt_required()
@@ -27,6 +29,23 @@ class TourList(Resource):
         return get_paginated_list(tours, '/tours',
                                         start=request.args.get('start', 1),
                                         limit=request.args.get('limit', 20))
+
+class SearchTourDetail(Resource):
+    @jwt_required()
+    def get(self, search_term):
+        current_identity = get_jwt_identity()
+        current_user = TouristInfoModel.find_by_user_id(current_identity)
+        if current_user is None:
+            return {'message': 'User is not a registered tourist'}, 401
+
+        search_term = search_term.title()
+        results = TourModel.query.options(joinedload('details_view')).filter(
+                        TourModel.name.like(
+                        '%'+search_term+'%')).all()
+        if not results:
+            return {'message': 'Tour does not exist'}, 400
+        for result in results:
+            return result.with_category_json()
 
 class AdminForTour(Resource):
     @jwt_required()
