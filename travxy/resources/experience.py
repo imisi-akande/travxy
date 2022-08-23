@@ -76,11 +76,16 @@ class TouristExperience(Resource):
         except:
             return{'message': 
                     'An error occured while trying to insert tourist experience'}, 500
-        return experience_instance.json(), 201
+        return experience_instance.with_time_updated_json(), 201
 
 class TouristExperienceList(Resource):
     @jwt_required()
     def get(self):
+        current_identity = get_jwt_identity()
+        current_user = TouristInfoModel.find_by_user_id(current_identity)
+        if current_user is None:
+            return {'message': 'User is not a registered tourist'}, 401
+
         inactive_users = TouristInfoModel.query.join(UserModel).filter(
                                         UserModel.isactive==False).all()
         inactive_tourists_list = []
@@ -91,12 +96,17 @@ class TouristExperienceList(Resource):
                                 TouristExperienceModel.tourist_id.notin_(
                                 inactive_tourists_list)).all()
 
-        return {'tourists_experience':[experience_instance.json() 
+        return {'tourists_experience':[experience_instance.with_time_updated_json() 
                         for experience_instance in experience_instances]}, 200
 
 class GetTouristExperience(Resource):
     @jwt_required()
     def get(self, tourist_id, detail_id):
+        current_identity = get_jwt_identity()
+        current_user = TouristInfoModel.find_by_user_id(current_identity)
+        if current_user is None:
+            return {'message': 'User is not a registered tourist'}, 401
+
         inactive_users = TouristInfoModel.query.join(UserModel).filter(
                                         UserModel.isactive==False).all()
         inactive_tourists_list = []
@@ -109,7 +119,7 @@ class GetTouristExperience(Resource):
         if experience_instance is None or tourist_id in inactive_tourists_list:
             return {'message': 'Experience does not exist'}, 400
 
-        return experience_instance.json(), 200
+        return experience_instance.with_time_updated_json(), 200
 
     @jwt_required()
     def delete(self, tourist_id, detail_id):
@@ -129,5 +139,32 @@ class GetTouristExperience(Resource):
             'An error occured while trying to delete tourist experience'}, 500
         return {'message': 'Experience deleted succesfully'}
 
+class SearchTouristExperience(Resource):
+    @jwt_required()
+    def get(self, search_term):
+        current_identity = get_jwt_identity()
+        tourist_user = TouristInfoModel.find_by_user_id(current_identity)
 
+        if tourist_user is None:
+            return {'message': 'User is not a registered tourist'}, 401
+
+        inactive_users = TouristInfoModel.query.join(UserModel).filter(
+                                        UserModel.isactive==False).all()
+        inactive_tourists_list = []
+        for instance in inactive_users:
+            inactive_tourists_list.append(instance.id)
+        search_term = search_term.title()
+        results = TouristExperienceModel.query.filter(
+                        TouristExperienceModel.tourist_id.notin_(
+                        inactive_tourists_list)).filter(
+                        TouristExperienceModel.comment.like(
+                        '%'+search_term+'%')).all()
+
+        if not results :
+            return {'message': 'Experience does not exist'}, 400
+
+        experience_search = [result.with_time_updated_json()
+                                for result in results]
+
+        return experience_search, 200
 
