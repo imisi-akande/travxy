@@ -5,6 +5,7 @@ from travxy.models.tourist import TouristInfoModel
 from travxy.models.tour import TourModel
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
+
 class DetailList(Resource):
     @jwt_required()
     def post(self):
@@ -153,3 +154,5 @@ class GetTouristDetail(Resource):
         if not detail_instances:
             return {'message': 'Tourist Detail does not exist'}, 400
         return detail_instances.with_tourist_json()
+
+

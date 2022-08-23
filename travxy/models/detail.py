@@ -22,7 +22,8 @@ class DetailModel(db.Model):
     tourists_info = db.relationship(
         "TouristInfoModel", secondary=tourist_detail,
         back_populates="tour_details_of_tourists",
-        lazy='dynamic')
+        lazy='dynamic', cascade="all, delete")
+
     tourists = db.relationship(
         "TouristInfoModel", secondary=tourist_detail, viewonly=True
         )

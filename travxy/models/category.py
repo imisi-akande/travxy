@@ -1,11 +1,14 @@
 from travxy.db import db
+from travxy.models.tour import tour_category
 
 class CategoryModel(db.Model):
     __tablename__ = 'categories'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True)
-    tours = db.relationship('TourModel', back_populates='category',
-                                lazy='dynamic')
+    tour_details = db.relationship(
+            "TourModel", secondary=tour_category,
+            back_populates="categories_info",
+            lazy='dynamic', cascade="all, delete")
 
     def json(self):
         return {'id': self.id, 'name': self.name}

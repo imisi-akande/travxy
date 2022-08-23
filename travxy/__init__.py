@@ -7,14 +7,18 @@ from .resources.role import RoleList
 from travxy.resources.user import (UserRegister, UserLogin, UserLogout, 
                                      TokenRefresh, AdminGetUserList,
                                     AdminGetUser, UserList, User)
-from travxy.resources.tour import Tour, TourList, AdminForTour
+from travxy.resources.tour import (Tour, TourList, SearchTourDetail, 
+                                    AdminForTour)
 from travxy.resources.category import (Category, CategoryList, 
                                         AdminCategoryList, AdminCategory)
 from travxy.resources.tourist import (Tourist, TouristDetail, TouristList, 
                                     AdminTouristList, AdminForSpecificTourist)
-from travxy.resources.detail import DetailList, Detail, GetTouristDetail
+from travxy.resources.detail import (DetailList, Detail, GetTouristDetail, 
+                                        )
+
 from travxy.resources.experience import (TouristExperienceList, 
-                                    TouristExperience, GetTouristExperience)
+                                        TouristExperience, GetTouristExperience,
+                                        SearchTouristExperience)
 from travxy.resources.role import RoleList
 
 from flask_migrate import Migrate
@@ -38,7 +42,7 @@ def create_app(env_name):
     app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
     app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
     jwt = JWTManager(app)
-    
+
     @jwt.token_in_blocklist_loader
     def check_if_token_in_blocklist(jwt_header, jwt_payload: dict):
         jti = jwt_payload["jti"]
@@ -75,6 +79,7 @@ def create_app(env_name):
     api.add_resource(AdminCategory, '/admin/category/<int:id>')
     api.add_resource(Tour, '/tour/<int:tour_id>')
     api.add_resource(TourList, '/tours')
+    api.add_resource(SearchTourDetail, '/tour-details/search/<search_term>')
     api.add_resource(AdminForTour, '/admin/tour')
     api.add_resource(UserRegister, '/register')
     api.add_resource(User, '/user/<int:user_id>')
@@ -94,9 +99,12 @@ def create_app(env_name):
 
     api.add_resource(TouristDetail, '/tourist-details')
     api.add_resource(GetTouristDetail, '/tourist-detail/<int:tourist_id>/<int:detail_id>')
+
     api.add_resource(TouristExperienceList, '/tourists-experience')
     api.add_resource(TouristExperience, '/tourist-experience')
     api.add_resource(GetTouristExperience, '/tourist-experience/<int:tourist_id>/<int:detail_id>')
+    api.add_resource(SearchTouristExperience, '/tourist-experience/search/<search_term>')
+
 
     api.add_resource(RoleList, '/roles')
 
