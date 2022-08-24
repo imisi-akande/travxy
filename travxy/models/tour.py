@@ -20,7 +20,12 @@ class TourModel(db.Model):
     categories_info = db.relationship(
         "CategoryModel", secondary=tour_category,
         back_populates="tour_details",
-        lazy='dynamic')
+        lazy='dynamic', cascade="all, delete")
+
+    category = db.relationship(
+        "CategoryModel", secondary=tour_category,
+        back_populates="tour_details",
+        viewonly=True)
 
     def json(self):
         return {'tour_id': self.id, 'name': self.name,

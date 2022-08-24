@@ -155,4 +155,18 @@ class GetTouristDetail(Resource):
             return {'message': 'Tourist Detail does not exist'}, 400
         return detail_instances.with_tourist_json()
 
-
+class DetailSpecificToAccount(Resource):
+    @jwt_required()
+    def get(self):
+        current_identity = get_jwt_identity()
+        tourist_user = TouristInfoModel.find_by_user_id(current_identity)
+        if tourist_user is None:
+            return {'message': 'User is not a registered tourist'}, 401
+        detail_instances = DetailModel.query.join(tourist_detail).join(
+                           TouristInfoModel).filter((
+                            tourist_detail.c.tourist_id == tourist_user.id)).all()
+        detail_result = [detail_instance.with_tourist_json()
+                            for detail_instance in detail_instances]
+        if not detail_result:
+            return {'message': 'User has no travel history'}, 404
+        return detail_result

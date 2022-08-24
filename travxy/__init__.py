@@ -7,18 +7,19 @@ from .resources.role import RoleList
 from travxy.resources.user import (UserRegister, UserLogin, UserLogout, 
                                      TokenRefresh, AdminGetUserList,
                                     AdminGetUser, UserList, User)
-from travxy.resources.tour import (Tour, TourList, SearchTourDetail, 
-                                    AdminForTour)
+from travxy.resources.tour import (Tour, TourList, SearchTours, 
+                                    AdminForNewTours, AdminForSameCategoryTours)
 from travxy.resources.category import (Category, CategoryList, 
                                         AdminCategoryList, AdminCategory)
 from travxy.resources.tourist import (Tourist, TouristDetail, TouristList, 
                                     AdminTouristList, AdminForSpecificTourist)
 from travxy.resources.detail import (DetailList, Detail, GetTouristDetail, 
-                                        )
+                                       DetailSpecificToAccount )
 
 from travxy.resources.experience import (TouristExperienceList, 
                                         TouristExperience, GetTouristExperience,
-                                        SearchTouristExperience)
+                                        SearchTouristExperience, 
+                                        ExperienceSpecificToAccount)
 from travxy.resources.role import RoleList
 
 from flask_migrate import Migrate
@@ -77,10 +78,13 @@ def create_app(env_name):
     api.add_resource(CategoryList, '/categories')
     api.add_resource(AdminCategoryList, '/admin/category')
     api.add_resource(AdminCategory, '/admin/category/<int:id>')
+
     api.add_resource(Tour, '/tour/<int:tour_id>')
     api.add_resource(TourList, '/tours')
-    api.add_resource(SearchTourDetail, '/tour-details/search/<search_term>')
-    api.add_resource(AdminForTour, '/admin/tour')
+    api.add_resource(SearchTours, '/tour-details/search/<search_term>')
+    api.add_resource(AdminForNewTours, '/admin/tour')
+    api.add_resource(AdminForSameCategoryTours, '/admin/category-tour')
+
     api.add_resource(UserRegister, '/register')
     api.add_resource(User, '/user/<int:user_id>')
     api.add_resource(UserLogin, '/login')
@@ -89,6 +93,7 @@ def create_app(env_name):
     api.add_resource(AdminGetUserList, '/admin/users')
     api.add_resource(AdminGetUser, '/admin/user/<int:user_id>')
     api.add_resource(TokenRefresh, '/refresh')
+
     api.add_resource(Tourist, '/tourist/<int:tourist_id>')
     api.add_resource(TouristList,  '/tourists')
     api.add_resource(AdminTouristList, '/admin/tourists')
@@ -96,15 +101,15 @@ def create_app(env_name):
 
     api.add_resource(DetailList, '/details')
     api.add_resource(Detail, '/detail/<int:detail_id>')
-
     api.add_resource(TouristDetail, '/tourist-details')
     api.add_resource(GetTouristDetail, '/tourist-detail/<int:tourist_id>/<int:detail_id>')
+    api.add_resource(DetailSpecificToAccount, '/account/details')
 
     api.add_resource(TouristExperienceList, '/tourists-experience')
     api.add_resource(TouristExperience, '/tourist-experience')
     api.add_resource(GetTouristExperience, '/tourist-experience/<int:tourist_id>/<int:detail_id>')
     api.add_resource(SearchTouristExperience, '/tourist-experience/search/<search_term>')
-
+    api.add_resource(ExperienceSpecificToAccount, '/account/tourist-experience')
 
     api.add_resource(RoleList, '/roles')
 

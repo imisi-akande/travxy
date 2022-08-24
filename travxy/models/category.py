@@ -9,13 +9,17 @@ class CategoryModel(db.Model):
             "TourModel", secondary=tour_category,
             back_populates="categories_info",
             lazy='dynamic', cascade="all, delete")
+    tour_view = db.relationship(
+            "TourModel", secondary=tour_category,
+            back_populates="categories_info",
+            viewonly=True)
 
     def json(self):
         return {'id': self.id, 'name': self.name}
 
     def with_tour_json(self):
         return {'id': self.id, 'name': self.name, 'tours': [tour.json()
-                for tour in self.tours.all()]}
+                for tour in self.tour_details.all()]}
 
     @classmethod
     def find_by_id(cls, id):

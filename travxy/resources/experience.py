@@ -36,7 +36,7 @@ class TouristExperience(Resource):
         try:
             experience.save_to_db()
         except:
-            return{'message': 
+            return{'message':
                     'An error occured while trying to insert tourist experience'}, 500
         return experience.json(), 201
 
@@ -135,7 +135,7 @@ class GetTouristExperience(Resource):
         try:
             experience_instance.delete_from_db()
         except:
-            return{'message': 
+            return{'message':
             'An error occured while trying to delete tourist experience'}, 500
         return {'message': 'Experience deleted succesfully'}
 
@@ -168,3 +168,19 @@ class SearchTouristExperience(Resource):
 
         return experience_search, 200
 
+class ExperienceSpecificToAccount(Resource):
+    @jwt_required()
+    def get(self):
+        current_identity = get_jwt_identity()
+        tourist_user = TouristInfoModel.find_by_user_id(current_identity)
+        if tourist_user is None:
+            return {'message': 'User is not a registered tourist'}, 401
+        experience_instances = TouristExperienceModel.query.filter(
+                            TouristExperienceModel.tourist_id==tourist_user.id).all()
+
+        experience_result = [experience_instance.with_time_updated_json()
+                                for experience_instance in experience_instances]
+        if not experience_result:
+            return {'message': 'User has no travel experience history'}, 404
+
+        return experience_result, 200
