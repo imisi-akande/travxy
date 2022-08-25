@@ -66,31 +66,44 @@ class TouristDetail(Resource):
     @jwt_required()
     def post(self):
         current_identity = get_jwt_identity()
-        tourist_user = TouristInfoModel.find_by_user_id(current_identity)
-        if tourist_user is None:
-            return {'message': 'User must be a registered tourist'}
-
+        detail_author = TouristInfoModel.find_by_user_id(current_identity)
+        if detail_author is None:
+            return {'message': 'User is not a registered tourist'}, 401
         tour_id = request.json.get('tour_id')
         departure = request.json.get('departure')
         transportation = request.json.get('transportation')
+        travel_buddies = request.json.get('travel_buddies')
         estimated_cost = request.json.get('estimated_cost')
-        if not all([tour_id, departure, transportation, estimated_cost]):
-            return {'message': 'Missing Required Fields'}, 400
-        tour_instance = TourModel.find_by_id(tour_id)
 
+        if not all([tour_id, departure, transportation, estimated_cost]):
+            return {'message': 'Missing Fields required'}, 400
+        if detail_author.user.email in travel_buddies:
+            return {'message':
+                    'You cannot add yourself into the travel buddy list'}, 400
+
+        tour_instance = TourModel.find_by_id(tour_id)
         if tour_instance is None:
-            return {'message': 'This tour name does not exist'}, 400
+            return {'message': 'This tour does not exist'}, 400
+
+        tourists = TouristInfoModel.query.join(UserModel).filter(
+                                    UserModel.email.in_(travel_buddies)).filter(
+                                    UserModel.isactive==True).all()
+        if len(tourists) != len(travel_buddies):
+            return {'message': 'All users must be registered tourists'}, 400
 
         detail = DetailModel(tour_id=tour_id, departure=departure,
-                            transportation=transportation,
-                            estimated_cost=estimated_cost)
-        tourist_user.tour_details_of_tourists.append(detail)
+                                transportation=transportation,
+                                travel_buddies_created_by=detail_author.id,
+                                estimated_cost=estimated_cost)
+        tourists.append(detail_author)
+        for tourist in tourists:
+            tourist.tour_details_of_tourists.append(detail)
         try:
-            tourist_user.save_to_db()
+            tourist.save_to_db()
         except:
             return{'message':
-                        'An error occured while trying to insert details'}, 500
-        return tourist_user.with_details_json(), 201
+                         'An error occured while trying to insert details'}, 500
+        return tourist.with_details_json(), 201
 
     @jwt_required()
     def get(self):
@@ -98,6 +111,59 @@ class TouristDetail(Resource):
                                                     joinedload('details_info'))
         tourists = [tourist.with_details_json() for tourist in tourist_instances]
         return tourists
+
+    @jwt_required()
+    def put(self):
+        current_identity = get_jwt_identity()
+        detail_author = TouristInfoModel.find_by_user_id(current_identity)
+        if detail_author is None:
+            return {'message': 'User is not a registered tourist'}, 401
+
+        detail_id = request.json.get('detail_id')
+        departure = request.json.get('departure')
+        transportation = request.json.get('transportation')
+        travel_buddies = request.json.get('travel_buddies')
+        estimated_cost = request.json.get('estimated_cost')
+
+        detail_instance = DetailModel.find_by_id(detail_id)
+        if (detail_instance is None or
+                detail_author.id != detail_instance.travel_buddies_created_by):
+            return {'message': 'Detail does not exist'}, 400
+
+        if not all([detail_id, departure, transportation, estimated_cost]):
+            return {'message': 'Missing Fields required'}, 400
+
+        tourists = TouristInfoModel.query.join(UserModel).filter(
+                                    UserModel.email.in_(travel_buddies)
+                                    ).filter(UserModel.isactive==True).all()
+        if len(tourists) != len(travel_buddies):
+            return {'message':
+                        'All travel buddies must be registered tourists'}, 400
+
+        if detail_author.user.email in travel_buddies:
+            return {'message':
+                    'You cannot add yourself into the travel buddy list'}, 400
+        tourists.append(detail_author)
+        new_travel_buddies = list(set(tourists) - set(
+                                        detail_instance.tourists_info.all()))
+        to_be_replaced_travel_buddies = list(
+                    set(detail_instance.tourists_info.all()) - (set(tourists)))
+
+        detail_instance.id = detail_id
+        detail_instance.departure = departure
+        detail_instance.transportation = transportation
+        detail_instance.estimated_cost = estimated_cost
+        for tourist_info in detail_instance.tourists_info:
+            if tourist_info in to_be_replaced_travel_buddies:
+                detail_instance.tourists_info.remove(tourist_info)
+        detail_instance.tourists_info.extend(new_travel_buddies)
+
+        try:
+            detail_instance.save_to_db()
+        except:
+            return{'message':
+                        'An error occured while trying to update details'}, 500
+        return detail_instance.with_tourist_json()
 
 
 class AdminTouristList(Resource):

@@ -24,7 +24,7 @@ class TourModel(db.Model):
 
     category = db.relationship(
         "CategoryModel", secondary=tour_category,
-        back_populates="tour_details",
+        back_populates="tour_view",
         viewonly=True)
 
     def json(self):
