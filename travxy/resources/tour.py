@@ -97,7 +97,7 @@ class AdminForTours(Resource):
         tour = TourModel.find_by_id(tour_id)
         if tour is None:
             return {'message': 'Tour does not exist'}
-        if not all([tour_id, name, location, country, about]):
+        if not all([tour_id, name, location, country, about, category_list]):
             return {'message': 'Missing fields required'}, 400
         categories_to_be_added = CategoryModel.query.filter(
                                 CategoryModel.id.in_(category_list)).all()
