@@ -52,29 +52,28 @@ class SearchTours(Resource):
         tours = [result.with_category_json() for result in results]
         return tours
 
-class AdminForNewTours(Resource):
+class AdminForTours(Resource):
     @jwt_required()
     def post(self):
         user_id = get_jwt_identity()
         current_user = TouristInfoModel.find_by_user_id(user_id)
         if current_user.role_id != 1 and current_user.role_id != 2:
             return {'message': 'Unauthorized User'}, 401
-
         name = request.json.get('name')
         location = request.json.get('location')
         country = request.json.get('country')
         about = request.json.get('about')
+        category_list = request.json.get('categories')
 
-        category_id = request.json.get('category_id')
-
-        if not all([name, location, country, about]):
+        if not all([name, location, country, about, category_list]):
             return {'message': 'Missing fields required'}, 400
+        category_instances = CategoryModel.query.join(
+                                TourModel.categories_info).filter(
+                                CategoryModel.id.in_(category_list)).all()
         tour = TourModel(name=name, location=location, country=country,
                         about=about)
-        category_instance = CategoryModel.find_by_id(category_id)
-        if category_instance is None:
-            return {'message': 'Category does not exist for this tour'}, 400
-        category_instance.tour_details.append(tour)
+        for category_instance in category_instances:
+            category_instance.tour_details.append(tour)
         try:
             category_instance.save_to_db()
         except:
@@ -82,7 +81,6 @@ class AdminForNewTours(Resource):
                     'An error occured while trying to insert the tour'}, 500
         return tour.with_category_json(), 201
 
-class AdminForSameCategoryTours(Resource):
     @jwt_required()
     def put(self):
         user_id = get_jwt_identity()
@@ -94,29 +92,34 @@ class AdminForSameCategoryTours(Resource):
         location = request.json.get('location')
         country = request.json.get('country')
         about = request.json.get('about')
-        category_id = request.json.get('category_id')
+        category_list = request.json.get('categories')
 
-        if not all([tour_id, name, location, country, about]):
-            return {'message': 'Missing fields required'}, 400
         tour = TourModel.find_by_id(tour_id)
-        same_category_instance = CategoryModel.query.join(TourModel, 
-                                CategoryModel.tour_details).filter(
-                                CategoryModel.id==category_id).filter(
-                                TourModel.id==tour_id).first()
         if tour is None:
             return {'message': 'Tour does not exist'}
-        if same_category_instance:
-            tour.tour_id = tour_id
-            tour.name = name
-            tour.location = location
-            tour.country = country
-            tour.about = about
-            for tour_category in tour.categories_info:
-                tour.categories_info.remove(tour_category)
-                tour.categories_info.append(same_category_instance)
+        if not all([tour_id, name, location, country, about]):
+            return {'message': 'Missing fields required'}, 400
+        categories_to_be_added = CategoryModel.query.filter(
+                                CategoryModel.id.in_(category_list)).all()
+
+        tour.tour_id = tour_id
+        tour.name = name
+        tour.location = location
+        tour.country = country
+        tour.about = about
+
+        new_categories = list(set(categories_to_be_added) - set(tour.categories_info.all()))
+        categories_to_be_replaced = list(set(tour.categories_info.all()) - set(categories_to_be_added))
+
+        for category in tour.categories_info.all():
+            if category in categories_to_be_replaced:
+                tour.categories_info.remove(category)
+        tour.categories_info.extend(new_categories)
+
         try:
             tour.save_to_db()
         except:
             return {'message':
                      'An error occured while trying to update the tour'}, 500
-        return tour.json()
+        return tour.with_category_json()
+

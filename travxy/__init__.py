@@ -7,8 +7,7 @@ from .resources.role import RoleList
 from travxy.resources.user import (UserRegister, UserLogin, UserLogout, 
                                      TokenRefresh, AdminGetUserList,
                                     AdminGetUser, UserList, User)
-from travxy.resources.tour import (Tour, TourList, SearchTours, 
-                                    AdminForNewTours, AdminForSameCategoryTours)
+from travxy.resources.tour import (Tour, TourList, SearchTours, AdminForTours)
 from travxy.resources.category import (Category, CategoryList, 
                                         AdminCategoryList, AdminCategory)
 from travxy.resources.tourist import (Tourist, TouristDetail, TouristList, 
@@ -82,8 +81,8 @@ def create_app(env_name):
     api.add_resource(Tour, '/tour/<int:tour_id>')
     api.add_resource(TourList, '/tours')
     api.add_resource(SearchTours, '/tour-details/search/<search_term>')
-    api.add_resource(AdminForNewTours, '/admin/tour')
-    api.add_resource(AdminForSameCategoryTours, '/admin/category-tour')
+    api.add_resource(AdminForTours, '/admin/tours')
+    # api.add_resource(AdminForSameCategoryTours, '/admin/category-tour')
 
     api.add_resource(UserRegister, '/register')
     api.add_resource(User, '/user/<int:user_id>')

@@ -11,7 +11,7 @@ class CategoryModel(db.Model):
             lazy='dynamic', cascade="all, delete")
     tour_view = db.relationship(
             "TourModel", secondary=tour_category,
-            back_populates="categories_info",
+            back_populates="category",
             viewonly=True)
 
     def json(self):
