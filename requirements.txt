@@ -3,3 +3,4 @@ Flask-RESTful
 Flask-SQLAlchemy
 python-dotenv
 Flask-Bcrypt
+SQLAlchemy
