@@ -1,6 +1,7 @@
-Flask-JWT-Extended
-Flask-RESTful
-Flask-SQLAlchemy
-python-dotenv
-Flask-Bcrypt
-SQLAlchemy
+Flask-JWT-Extended==4.4.2
+Flask-RESTful==0.3.9
+Flask-SQLAlchemy==2.5.1
+python-dotenv==0.20.0
+Flask-Bcrypt==1.0.1
+SQLAlchemy==1.4.39
+pytest==7.1.2

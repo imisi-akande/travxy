@@ -2,10 +2,8 @@ import os
 from dotenv import load_dotenv
 
 from travxy import create_app
+from travxy.config import DevelopmentConfig
 
-load_dotenv('.env')
-
-env_name = os.getenv('FLASK_ENV')
-app = create_app(env_name)
+app = create_app()
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
