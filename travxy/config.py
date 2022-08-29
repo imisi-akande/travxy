@@ -2,40 +2,75 @@ import os
 from dotenv import load_dotenv
 
 basedir = os.path.abspath(os.path.dirname(__file__))
-load_dotenv(os.path.join(basedir, '.env'))
+env_setting = load_dotenv(os.path.join(basedir, '.env'))
+
+
+def get_env_variable(name):
+    try:
+        return os.environ.get(name)
+    except KeyError:
+        message = "Expected environment variable '{}' not set.".format(name)
+        raise Exception(message)
+
+def create_db_url(user, pw, host, port, db):
+    return f"postgresql://{user}:{pw}@{host}:{port}/{db}"
+
+
+# import .env variables for DB connection
+def get_env_db_url(env_setting):
+    if env_setting == "development":
+        POSTGRES_USER = get_env_variable("DEV_POSTGRES_USER")
+        POSTGRES_PW = get_env_variable("DEV_POSTGRES_PW")
+        POSTGRES_HOST = get_env_variable("DEV_POSTGRES_HOST")
+        POSTGRES_PORT = get_env_variable("DEV_POSTGRES_PORT")
+        POSTGRES_DB = get_env_variable("DEV_POSTGRES_DB")
+    elif env_setting == "testing":
+        POSTGRES_USER = get_env_variable("TESTING_POSTGRES_USER")
+        POSTGRES_PW = get_env_variable("TESTING_POSTGRES_PW")
+        POSTGRES_HOST = get_env_variable("TESTING_POSTGRES_HOST")
+        POSTGRES_PORT = get_env_variable("TESTING_POSTGRES_PORT")
+        POSTGRES_DB = get_env_variable("TESTING_POSTGRES_DB")
+    elif env_setting == "production":
+        POSTGRES_USER = get_env_variable("PROD_POSTGRES_USER")
+        POSTGRES_PW = get_env_variable("PROD_POSTGRES_PW")
+        POSTGRES_HOST = get_env_variable("PROD_POSTGRES_HOST")
+        POSTGRES_PORT = get_env_variable("PROD_POSTGRES_PORT")
+        POSTGRES_DB = get_env_variable("PROD_POSTGRES_DB")
+
+    return create_db_url(POSTGRES_USER, POSTGRES_PW, POSTGRES_HOST,
+                            POSTGRES_PORT, POSTGRES_DB)
+
+# DB URLS for each Environment
+DEV_DB_URL = get_env_db_url("development")
+TESTING_DB_URL = get_env_db_url("testing")
+PROD_DB_URL = get_env_db_url("production")
 
 class Config(object):
     """Base config."""
-    TESTING = False
+    SQLALCHEMY_DATABASE_URI = DEV_DB_URL
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
 
+    DEBUG = False
+    TESTING = False
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    TESTING = False
-    SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI')
+    FLASK_APP = os.environ.get("FLASK_APP")
     FLASK_ENV = os.environ.get("FLASK_ENV")
-
-
-class ProductionConfig(Config):
-    """
-    Production environment configurations
-    """
-    DEBUG = False
-    TESTING = False
-    SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_PRODUCTION_DATABASE_URI')
 
 class TestingConfig(Config):
     """
     Test environment configurations
     """
-    DEBUG = False
+    SQLALCHEMY_DATABASE_URI = TESTING_DB_URL
+    DEBUG = True
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_TEST_DATABASE_URI')
 
-app_config = {
-    'development': DevelopmentConfig,
-    'production': ProductionConfig,
-    'test': TestingConfig
-}
-
+class ProductionConfig(Config):
+    """
+    Production environment configurations
+    """
+    SQLALCHEMY_DATABASE_URI = PROD_DB_URL
+    DEBUG = False
+    TESTING = False
