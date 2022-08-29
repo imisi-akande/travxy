@@ -1,6 +1,6 @@
 from travxy.db import db
 
-from sqlalchemy.dialects.postgresql import ENUM
+from sqlalchemy import Enum
 
 from travxy.models.detail import tourist_detail
 
@@ -8,9 +8,8 @@ class TouristInfoModel(db.Model):
     __tablename__ = 'tourists'
     id = db.Column(db.Integer, primary_key=True)
     nationality = db.Column(db.String(80), nullable=False)
-    gender = db.Column(ENUM("Male", "Female", "Neutral",
-                                       name="gender_level", nullable=False,
-                                       create_type=False))
+    gender = db.Column(Enum("Male", "Female", "Neutral",
+                                       name="gender_level", nullable=False))
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.id", 
                         ondelete="CASCADE"))

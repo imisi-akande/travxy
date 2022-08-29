@@ -13,7 +13,7 @@ from travxy.resources.category import (Category, CategoryList,
 from travxy.resources.tourist import (Tourist, TouristDetail, TouristList, 
                                     AdminTouristList, AdminForSpecificTourist)
 from travxy.resources.detail import (DetailList, Detail, GetTouristDetail, 
-                                       DetailSpecificToAccount )
+                                       DetailSpecificToAccount)
 
 from travxy.resources.experience import (TouristExperienceList, 
                                         TouristExperience, GetTouristExperience,
@@ -23,17 +23,15 @@ from travxy.resources.role import RoleList
 
 from flask_migrate import Migrate
 from travxy.blocklist import BLOCKLIST
-from travxy.config import app_config
+from travxy.config import DevelopmentConfig
 from travxy.models import category, detail, experience, role, tour, tourist, user
 
 
 migrate = Migrate()
-
-def create_app(env_name):
+def create_app(config_class=DevelopmentConfig):
     app = Flask(__name__)
-    app.config.from_object(app_config[env_name])
-
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config.from_object(config_class)
+    # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['PROPAGATE_EXCEPTIONS'] = True
     db.init_app(app)
     migrate.init_app(app, db)
@@ -55,7 +53,7 @@ def create_app(env_name):
 
     @jwt.invalid_token_loader
     def invalid_token_callback(error):
-        return jsonify(description='Signature verification failed', 
+        return jsonify(description='Signature verification failed',
                         error='Invalid token'), 401
 
     @jwt.unauthorized_loader
@@ -82,7 +80,6 @@ def create_app(env_name):
     api.add_resource(TourList, '/tours')
     api.add_resource(SearchTours, '/tour-details/search/<search_term>')
     api.add_resource(AdminForTours, '/admin/tours')
-    # api.add_resource(AdminForSameCategoryTours, '/admin/category-tour')
 
     api.add_resource(UserRegister, '/register')
     api.add_resource(User, '/user/<int:user_id>')
