@@ -2,7 +2,7 @@ from flask_restful import Resource, request
 from travxy.models.detail import DetailModel, tourist_detail
 from travxy.models.user import UserModel
 from travxy.models.tourist import TouristInfoModel
-from travxy.models.tour import TourModel
+from travxy.models.place import PlaceModel
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 
@@ -13,22 +13,22 @@ class DetailList(Resource):
         detail_author = TouristInfoModel.find_by_user_id(current_identity)
         if detail_author is None:
             return {'message': 'User is not a registered tourist'}, 401
-        tour_id = request.json.get('tour_id')
+        place_id = request.json.get('place_id')
         departure = request.json.get('departure')
         transportation = request.json.get('transportation', 'Air')
         travel_buddies = request.json.get('travel_buddies')
         estimated_cost = request.json.get('estimated_cost')
 
-        if not all([tour_id, departure, transportation, estimated_cost]):
+        if not all([place_id, departure, transportation, estimated_cost]):
             return {'message': 'Missing Fields required'}, 400
 
         if detail_author.user.email in travel_buddies:
             return {'message':
                     'You cannot add yourself into the travel buddy list'}, 400
 
-        tour_instance = TourModel.find_by_id(tour_id)
-        if tour_instance is None:
-            return {'message': 'This tour does not exist'}, 400
+        place_instance = PlaceModel.find_by_id(place_id)
+        if place_instance is None:
+            return {'message': 'This place does not exist'}, 400
 
         tourists = TouristInfoModel.query.join(UserModel).filter(
                                     UserModel.email.in_(travel_buddies)).filter(
@@ -37,12 +37,12 @@ class DetailList(Resource):
             return {'message': 'All users must be registered tourists'}, 400
 
         if len(travel_buddies) > 0:
-            detail = DetailModel(tour_id=tour_id, departure=departure,
+            detail = DetailModel(place_id=place_id, departure=departure,
                                 transportation=transportation,
                                 travel_buddies_created_by=detail_author.id,
                                 estimated_cost=estimated_cost)
         else:
-            detail = DetailModel(tour_id=tour_id, departure=departure, transportation=transportation,
+            detail = DetailModel(place_id=place_id, departure=departure, transportation=transportation,
                                 estimated_cost=estimated_cost)
 
         for tourist in tourists:

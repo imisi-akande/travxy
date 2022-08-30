@@ -8,14 +8,14 @@ class Category(Resource):
     def get(self, id):
         category = CategoryModel.find_by_id(id)
         if category:
-            return category.with_tour_json()
+            return category.with_place_json()
         return {'message': 'Category not found'}, 404
 
 class CategoryList(Resource):
     @jwt_required(optional=True)
     def get(self):
         current_identity = get_jwt_identity()
-        categories = [category.with_tour_json() 
+        categories = [category.with_place_json() 
                         for category in CategoryModel.find_all()]
         if current_identity:
             return {'categories': categories}

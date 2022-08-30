@@ -1,4 +1,4 @@
-INSERT INTO details (departure, transportation, travel_buddies_created_by, estimated_cost, tour_id) VALUES
+INSERT INTO details (departure, transportation, travel_buddies_created_by, estimated_cost, place_id) VALUES
 ('Germany', 'Air', 7, 2550, 28),
 ('Hawaii', 'Water', 7, 8900, 87),
 ('Australia', 'Water', 6, 3200, 16),
