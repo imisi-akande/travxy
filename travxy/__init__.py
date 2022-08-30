@@ -31,7 +31,6 @@ migrate = Migrate()
 def create_app(config_class=DevelopmentConfig):
     app = Flask(__name__)
     app.config.from_object(config_class)
-    # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['PROPAGATE_EXCEPTIONS'] = True
     db.init_app(app)
     migrate.init_app(app, db)
