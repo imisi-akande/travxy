@@ -21,18 +21,18 @@ class DetailModel(db.Model):
                                             nullable=False)
     tourists_info = db.relationship(
         "TouristInfoModel", secondary=tourist_detail,
-        back_populates="tour_details_of_tourists",
+        back_populates="place_details_of_tourists",
         lazy='dynamic', cascade="all, delete")
 
     tourists = db.relationship(
         "TouristInfoModel", secondary=tourist_detail, viewonly=True
         )
-    tour_id = db.Column(db.Integer, db.ForeignKey('tours.id',
+    place_id = db.Column(db.Integer, db.ForeignKey('places.id',
                                                     ondelete="CASCADE"))
-    tour = db.relationship('TourModel', back_populates="details")
+    place = db.relationship('PlaceModel', back_populates="details")
 
     def json(self):
-        return {'detail_id': self.id, 'tour_id': self.tour_id,
+        return {'detail_id': self.id, 'place_id': self.place_id,
                 'departure': self.departure,
                 'transportation': self.transportation,
                 'estimated_cost': self.estimated_cost,
@@ -49,8 +49,8 @@ class DetailModel(db.Model):
         return cls.query.all()
 
     @classmethod
-    def find_by_tour_id(cls, id):
-        return cls.query.filter_by(tour_id=id).first()
+    def find_by_place_id(cls, id):
+        return cls.query.filter_by(place_id=id).first()
 
     @classmethod
     def find_by_id(cls, id):

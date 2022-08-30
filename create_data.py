@@ -17,7 +17,7 @@ try:
     with engine.connect() as conn:
         base_path = "./data_helper/"
         paths = ["users.sql", "roles.sql", "tourists.sql", "categories.sql",
-                "tours.sql", "tour_category.sql", "details.sql",
+                "places.sql", "place_category.sql", "details.sql",
                 "tourist_detail.sql", "tourist_experience.sql"]
         for path in paths:
             full_path = os.path.join(base_path, path)

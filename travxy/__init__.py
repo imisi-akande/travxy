@@ -7,7 +7,7 @@ from .resources.role import RoleList
 from travxy.resources.user import (UserRegister, UserLogin, UserLogout, 
                                      TokenRefresh, AdminGetUserList,
                                     AdminGetUser, UserList, User)
-from travxy.resources.tour import (Tour, TourList, SearchTours, AdminForTours)
+from travxy.resources.place import (Place, PlaceList, SearchPlaces, AdminForPlaces)
 from travxy.resources.category import (Category, CategoryList, 
                                         AdminCategoryList, AdminCategory)
 from travxy.resources.tourist import (Tourist, TouristDetail, TouristList, 
@@ -24,7 +24,7 @@ from travxy.resources.role import RoleList
 from flask_migrate import Migrate
 from travxy.blocklist import BLOCKLIST
 from travxy.config import DevelopmentConfig
-from travxy.models import category, detail, experience, role, tour, tourist, user
+from travxy.models import category, detail, experience, role, place, tourist, user
 
 
 migrate = Migrate()
@@ -75,10 +75,10 @@ def create_app(config_class=DevelopmentConfig):
     api.add_resource(AdminCategoryList, '/admin/category')
     api.add_resource(AdminCategory, '/admin/category/<int:id>')
 
-    api.add_resource(Tour, '/tour/<int:tour_id>')
-    api.add_resource(TourList, '/tours')
-    api.add_resource(SearchTours, '/tour-details/search/<search_term>')
-    api.add_resource(AdminForTours, '/admin/tours')
+    api.add_resource(Place, '/place/<int:place_id>')
+    api.add_resource(PlaceList, '/places')
+    api.add_resource(SearchPlaces, '/place-details/search/<search_term>')
+    api.add_resource(AdminForPlaces, '/admin/places')
 
     api.add_resource(UserRegister, '/register')
     api.add_resource(User, '/user/<int:user_id>')

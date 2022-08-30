@@ -1,6 +1,6 @@
-INSERT INTO tours (name, location, country, about) VALUES 
+INSERT INTO places (name, location, country, about) VALUES 
               ('Shark Bay', 'Gascoyne', 'Australia', 'The most westerly point on mainland Australia is this UNESCO World Heritage Site. It was founded in the 17th Century'),
-              ('Paracas', 'Paracase', 'Peru', 'A small seaside town in the Ica region of Peru, Paracas is where the desert meets the sea'),
+              ('Paracas', 'Paracas', 'Peru', 'A small seaside town in the Ica region of Peru, Paracas is where the desert meets the sea'),
               ('Algarve', 'Portugal', 'Portugal', 'It is known for its surfing, picturesque cities, local crafts, cuisine, golden sand beaches and natural marvels.'),
               ('Paris', 'Paris', 'France', 'It is known worldwide for the Louvre Museum, Notre-Dame cathedral, and the Eiffel tower.'),
               ('Sarakiniko beach', 'Greece', 'Greece', 'A beach on Milos Island, Greece, situated on the north shore of the island.'),

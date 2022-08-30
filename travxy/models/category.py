@@ -1,25 +1,25 @@
 from travxy.db import db
-from travxy.models.tour import tour_category
+from travxy.models.place import place_category
 
 class CategoryModel(db.Model):
     __tablename__ = 'categories'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True)
-    tour_details = db.relationship(
-            "TourModel", secondary=tour_category,
+    place_details = db.relationship(
+            "PlaceModel", secondary=place_category,
             back_populates="categories_info",
             lazy='dynamic', cascade="all, delete")
-    tour_view = db.relationship(
-            "TourModel", secondary=tour_category,
+    place_view = db.relationship(
+            "PlaceModel", secondary=place_category,
             back_populates="category",
             viewonly=True)
 
     def json(self):
         return {'id': self.id, 'name': self.name}
 
-    def with_tour_json(self):
-        return {'id': self.id, 'name': self.name, 'tours': [tour.json()
-                for tour in self.tour_details.all()]}
+    def with_place_json(self):
+        return {'id': self.id, 'name': self.name, 'places': [place.json()
+                for place in self.place_details.all()]}
 
     @classmethod
     def find_by_id(cls, id):

@@ -1,4 +1,4 @@
-INSERT INTO tour_category (tour_id, category_id) VALUES
+INSERT INTO place_category (place_id, category_id) VALUES
 (1, 3),
 (2, 14),
 (3, 2),

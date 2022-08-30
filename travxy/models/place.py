@@ -1,34 +1,34 @@
 from travxy.db import db
 
-tour_category = db.Table('tour_category',
-                       db.Column('tour_id', db.Integer, db.ForeignKey('tours.id'), primary_key=True),
+place_category = db.Table('place_category',
+                       db.Column('place_id', db.Integer, db.ForeignKey('places.id'), primary_key=True),
                        db.Column('category_id', db.Integer, db.ForeignKey('categories.id'), primary_key=True)
                     )
 
-class TourModel(db.Model):
-    __tablename__ = 'tours'
+class PlaceModel(db.Model):
+    __tablename__ = 'places'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
     location = db.Column(db.String(80), nullable=False)
     country = db.Column(db.String(80), nullable=False)
     about = db.Column(db.String(500), nullable=False)
-    details = db.relationship('DetailModel', back_populates='tour',
+    details = db.relationship('DetailModel', back_populates='place',
                                 lazy='dynamic')
-    details_view = db.relationship('DetailModel', back_populates='tour',
+    details_view = db.relationship('DetailModel', back_populates='place',
                                 viewonly=True)
 
     categories_info = db.relationship(
-        "CategoryModel", secondary=tour_category,
-        back_populates="tour_details",
+        "CategoryModel", secondary=place_category,
+        back_populates="place_details",
         lazy='dynamic', cascade="all, delete")
 
     category = db.relationship(
-        "CategoryModel", secondary=tour_category,
-        back_populates="tour_view",
+        "CategoryModel", secondary=place_category,
+        back_populates="place_view",
         viewonly=True)
 
     def json(self):
-        return {'tour_id': self.id, 'name': self.name,
+        return {'place_id': self.id, 'name': self.name,
                 'location': self.location, 'country': self.country,
                 'about': self.about}
 

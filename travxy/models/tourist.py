@@ -19,7 +19,7 @@ class TouristInfoModel(db.Model):
     role = db.relationship("RoleModel", back_populates = "tourists")
 
 
-    tour_details_of_tourists = db.relationship(
+    place_details_of_tourists = db.relationship(
             "DetailModel", secondary=tourist_detail,
             back_populates="tourists_info",
             lazy='dynamic', cascade="all, delete")
@@ -49,8 +49,8 @@ class TouristInfoModel(db.Model):
         return {**self.json_with_user_detail(), 'role_id': self.role_id}
 
     def with_details_json(self):
-        return {**self.json(), 'tour_details':[tour_details.json()
-                    for tour_details in self.details_info]}
+        return {**self.json(), 'place_details':[place_details.json()
+                    for place_details in self.details_info]}
 
     @classmethod
     def find_by_user_id(cls, user_id):
