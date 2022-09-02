@@ -5,6 +5,8 @@ class UserModel(db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
+    last_name = db.Column(db.String(80), nullable=False)
+    first_name = db.Column(db.String(80), nullable=False)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), nullable=False)
@@ -19,12 +21,16 @@ class UserModel(db.Model):
     def json(self):
         return {
                 'id': self.id,
+                'last_name': self.last_name,
+                'first_name': self.first_name,
                 'username': self.username,
                 'email': self.email
                 }
     def username_json(self):
         return {
                 'user_id':self.id,
+                'last_name': self.last_name,
+                'first_name': self.first_name,
                 'username': self.username,
                 }
 
