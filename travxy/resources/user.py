@@ -89,7 +89,7 @@ class User(Resource):
         tourist_user = TouristInfoModel.find_by_user_id(current_identity)
         if tourist_user is None:
             return {'message':
-                        'You must register as a tourist to see other tourists'}
+                        'You must register as a tourist to see other tourists'}, 401
         user = UserModel.find_by_id(user_id)
         if not user or user.isactive==False:
             return {'message': 'User not found'}, 404
