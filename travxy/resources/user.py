@@ -11,19 +11,27 @@ from travxy.blocklist import BLOCKLIST
 class UserRegister(Resource):
     def post(self):
         email = request.json.get('email')
+        username = request.json.get('username')
+
         user = UserModel.find_by_email(email)
-        if UserModel.find_by_email(email):
+        username_instance = UserModel.find_by_username(username)
+
+        if user:
             return {"message":"User already exist"}, 400
-        else:
-            username = request.json.get('username')
-            email = request.json.get('email')
-            password = request.json.get('password')
-            hash_password= UserModel.generate_hash(password)
-            data = {'username':username, 'email':email,
-                                'password':hash_password}
-            user = UserModel(**data)
-            user.save_to_db()
-            return {"message": "User created succesfully"}, 201
+
+        if username_instance and username_instance.username == username:
+            return {"message":"Username already exist"}, 400
+
+        last_name = request.json.get('last_name')
+        first_name = request.json.get('first_name')
+        password = request.json.get('password')
+        hash_password= UserModel.generate_hash(password)
+        data = {'last_name': last_name.title(), 'first_name': first_name.title(),
+                'username':username, 'email':email,
+                'password':hash_password}
+        user = UserModel(**data)
+        user.save_to_db()
+        return {"message": "User created succesfully"}, 201
 
 class AdminGetUser(Resource):
     @jwt_required()
@@ -40,6 +48,8 @@ class AdminGetUser(Resource):
                 return {'message': 'User not found'}, 404
             tourist_instance = TouristInfoModel.find_by_user_id(user_id)
             user_result = {'id': user.id,
+                            'last_name': user.last_name,
+                            'first_name': user.first_name,
                             'username': user.username,
                             'email': user.email,
                             'isactive': user.isactive,
@@ -79,7 +89,7 @@ class User(Resource):
         tourist_user = TouristInfoModel.find_by_user_id(current_identity)
         if tourist_user is None:
             return {'message':
-                        'You must register as a tourist to see other tourists'}
+                        'You must register as a tourist to see other tourists'}, 401
         user = UserModel.find_by_id(user_id)
         if not user or user.isactive==False:
             return {'message': 'User not found'}, 404

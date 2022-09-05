@@ -42,8 +42,8 @@ class TouristList(Resource):
                                    user_id=user_id)
         try:
             tourist.save_to_db()
-        except:
-            return {'message': 'An error occured while creating tourists'}, 500
+        except Exception as e:
+            return str(e), 500
         return tourist.json(), 201
 
     @jwt_required()
