@@ -42,9 +42,6 @@ class TouristInfoModel(db.Model):
         return {'nationality': self.nationality,
                 'gender': self.gender}
 
-    # def json_with_role(self):
-    #     return {**self.json_with_user_detail(), 'role_id': self.role_id}
-
     def with_details_json(self):
         return {**self.json(), 'place_details':[place_details.json()
                     for place_details in self.details_info]}
