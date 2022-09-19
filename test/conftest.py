@@ -1,7 +1,9 @@
+from re import T
 import pytest
 import os
 from travxy import create_app, db
 from sqlalchemy.orm import close_all_sessions
+from travxy.models.tourist import TouristInfoModel
 from travxy.models.user import UserModel
 from travxy.models.role import RoleModel
 
@@ -54,7 +56,7 @@ def create_user():
         if not user_details:
             user_details = {
                 "last_name": "Stone",
-                "first_name": "Miriam",
+                "first_name": "Mark",
                 "username": "stone",
                 "email": "stone@gmail.com",
                 "password": "stone"
@@ -71,5 +73,108 @@ def create_jwt_token(create_user):
         if not user:
             user = create_user()
         return user, create_access_token(identity=user.id, fresh=True)
+    return _
+
+@pytest.fixture
+def create_tourist(create_user):
+    def _(user=None, tourist_details=None):
+        if not user:
+            user = create_user()
+        if not tourist_details:
+            tourist_details = {
+                "nationality": "Jamaica",
+                "gender": "Male",
+            }
+        tourist_details['user_id'] = user.id
+        tourist = TouristInfoModel(**tourist_details)
+        tourist.save_to_db()
+        return tourist
+    return _
+
+@pytest.fixture
+def create_super_admin():
+    def _(user_details=None):
+        if not user_details:
+            user_details = {
+                "id": 2,
+                "last_name": "Kit",
+                "first_name": "Paul",
+                "username": "kit",
+                "email": "kit@gmail.com",
+                "password": "kit"
+            }
+        user_details["password"] = UserModel.generate_hash(user_details["password"])
+        super_user = UserModel(**user_details)
+        print(super_user.id, 'the adminnnn')
+        super_user.save_to_db()
+        return super_user
+    return _
+
+@pytest.fixture
+def create_super_user_jwt_token(create_super_admin):
+    def _(super_user=None):
+        if not super_user:
+            super_user = create_super_admin()
+        return super_user, create_access_token(identity=super_user.id, fresh=True)
+    return _
+
+@pytest.fixture
+def add_super_admin_to_tourist():
+    def _(tourist_details=None):
+        if not tourist_details:
+            # create_super_admin()
+            tourist_details = {
+                "id": 2,
+                "nationality": "Ethiopia",
+                "gender": "Male",
+                "role_id": 1,
+                "user_id": 2
+            }
+        tourist = TouristInfoModel(**tourist_details)
+        tourist.save_to_db()
+        return tourist
+    return _
+
+@pytest.fixture
+def create_admin_user():
+    def _(user_details=None):
+        if not user_details:
+            user_details = {
+                "id": 3,
+                "last_name": "Tyler",
+                "first_name": "Sarah",
+                "username": "tyler",
+                "email": "tyler@gmail.com",
+                "password": "tyler"
+            }
+        user_details["password"] = UserModel.generate_hash(user_details["password"])
+        user = UserModel(**user_details)
+        user.save_to_db()
+        return user
+    return _
+
+@pytest.fixture
+def create_admin_user_jwt_token(create_admin_user):
+    def _(admin_user=None):
+        if not admin_user:
+            admin_user = create_admin_user()
+        return admin_user, create_access_token(identity=admin_user.id, fresh=True)
+    return _
+
+@pytest.fixture
+def add_admin_to_tourist():
+    def _(tourist_details=None):
+        if not tourist_details:
+            # create_admin()
+            tourist_details = {
+                "id": 3,
+                "nationality": "Zambia",
+                "gender": "Female",
+                "user_id": 3,
+                "role_id": 2
+            }
+        tourist = TouristInfoModel(**tourist_details)
+        tourist.save_to_db()
+        return tourist
     return _
 

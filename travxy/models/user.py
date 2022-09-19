@@ -24,7 +24,8 @@ class UserModel(db.Model):
                 'last_name': self.last_name,
                 'first_name': self.first_name,
                 'username': self.username,
-                'email': self.email
+                'email': self.email,
+                'isactive': self.isactive
                 }
     def username_json(self):
         return {
