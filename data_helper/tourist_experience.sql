@@ -7,10 +7,10 @@ INSERT INTO tourist_experience (tourist_id, detail_id, comment, rating, duration
 (6, 4, 'Beautiful sanctuary. I will revisit', 5, 24000,'2022-07-13 19:03:30', NULL),
 (2, 4, 'Excellent', 5, 23000, '2022-07-13 19:03:30', NULL),
 (8, 4, 'Good', 4, 23000, '2022-07-13 19:03:30', NULL),
-(10, 4, 'Go there. You will enjoy', 4, 25000, '2022-07-13 19:03:30', NULL),
+(7, 4, 'Go there. You will enjoy', 4, 25000, '2022-07-13 19:03:30', NULL),
 (1, 5, 'Had a awesome cocktail experience', 3, 15000, '2022-07-17 19:03:30', NULL),
 (1, 6, 'The island is serene', 4, 750000, '2022-07-22 19:03:30', NULL),
 (4, 6, 'Good place', 3, 730000, '2022-07-22 19:03:30', NULL),
 (5, 6, 'Comfortable', 4, 750000, '2022-07-22 19:03:30', NULL),
 (7, 6, 'Had lots of fun', 4, 750000, '2022-07-22 19:03:30', NULL),
-(9, 6, 'Accommodating', 4, 750000, '2022-07-22 19:03:30', NULL);
+(8, 6, 'Accommodating', 4, 750000, '2022-07-22 19:03:30', NULL);

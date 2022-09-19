@@ -1,8 +1,8 @@
 from flask_restful import Resource, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from travxy.models.place import PlaceModel
-from travxy.models.tourist import TouristInfoModel
 from travxy.models.category import CategoryModel
+from travxy.models.user import UserModel
 from travxy.helpers.pagination import get_paginated_list
 from sqlalchemy.orm import joinedload
 
@@ -13,18 +13,6 @@ class Place(Resource):
         place = PlaceModel.find_by_id(place_id)
         if place:
             return place.with_category_json()
-        return {'message': 'Place does not exist'}, 404
-
-    @jwt_required()
-    def delete(self, place_id):
-        user_id = get_jwt_identity()
-        current_user = TouristInfoModel.find_by_user_id(user_id)
-        if current_user.role_id != 1 and current_user.role_id != 2:
-            return {'message': 'Unauthorized User'}, 401
-        place = PlaceModel.find_by_id(place_id)
-        if place:
-            place.delete_from_db()
-            return{'message': 'Place deleted succesfully'}, 200
         return {'message': 'Place does not exist'}, 404
 
 class PlaceList(Resource):
@@ -38,11 +26,6 @@ class PlaceList(Resource):
 class SearchPlaces(Resource):
     @jwt_required()
     def get(self, search_term):
-        current_identity = get_jwt_identity()
-        current_user = TouristInfoModel.find_by_user_id(current_identity)
-        if current_user is None:
-            return {'message': 'User is not a registered tourist'}, 401
-
         search_term = search_term.title()
         results = PlaceModel.query.options(joinedload('details_view')).filter(
                         PlaceModel.name.like(
@@ -52,11 +35,35 @@ class SearchPlaces(Resource):
         places = [result.with_category_json() for result in results]
         return places
 
+class AdminForPlace(Resource):
+    @jwt_required()
+    def get(self, place_id):
+        user_id = get_jwt_identity()
+        current_user = UserModel.query.get(user_id)
+        if current_user.role_id != 1 and current_user.role_id != 2:
+            return {'message': 'Unauthorized User'}, 401
+        place = PlaceModel.find_by_id(place_id)
+        if place:
+            return place.with_category_json()
+        return {'message': 'Place does not exist'}, 404
+
+    @jwt_required()
+    def delete(self, place_id):
+        user_id = get_jwt_identity()
+        current_user = UserModel.query.get(user_id)
+        if current_user.role_id != 1 and current_user.role_id != 2:
+            return {'message': 'Unauthorized User'}, 401
+        place = PlaceModel.find_by_id(place_id)
+        if place:
+            place.delete_from_db()
+            return{'message': 'Place deleted succesfully'}, 200
+        return {'message': 'Place does not exist'}, 404
+
 class AdminForPlaces(Resource):
     @jwt_required()
     def post(self):
         user_id = get_jwt_identity()
-        current_user = TouristInfoModel.find_by_user_id(user_id)
+        current_user = UserModel.query.get(user_id)
         if current_user.role_id != 1 and current_user.role_id != 2:
             return {'message': 'Unauthorized User'}, 401
         name = request.json.get('name')
@@ -84,7 +91,7 @@ class AdminForPlaces(Resource):
     @jwt_required()
     def put(self):
         user_id = get_jwt_identity()
-        current_user = TouristInfoModel.find_by_user_id(user_id)
+        current_user = UserModel.query.get(user_id)
         if current_user.role_id != 1 and current_user.role_id != 2:
             return {'message': 'Unauthorized User'}, 401
         place_id = request.json.get('place_id')

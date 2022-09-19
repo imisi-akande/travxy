@@ -1,12 +1,10 @@
 
-INSERT INTO tourists (nationality, gender, user_id, role_id) VALUES
-    ('United States of America', 'Female', 1, 1),
-    ('Nigeria', 'Female', 2, 2),
-    ('Canada', 'Male', 3, 3),
-    ('Italy', 'Male', 4, 3),
-    ('Mexico', 'Female', 5, 3),
-    ('Australia', 'Male', 6, 3),
-    ('Germany', 'Male', 7, 3),
-    ('Ghana', 'Female', 8, 3),
-    ('United Kingdom', 'Female', 9, 3),
-    ('United States of America', 'Male', 10, 3);
+INSERT INTO tourists (nationality, gender, user_id) VALUES
+    ('Canada', 'Male', 3),
+    ('Italy', 'Male', 4),
+    ('Mexico', 'Female', 5),
+    ('Australia', 'Male', 6),
+    ('Germany', 'Male', 7),
+    ('Ghana', 'Female', 8),
+    ('United Kingdom', 'Female', 9),
+    ('United States of America', 'Male', 10);

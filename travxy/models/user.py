@@ -13,6 +13,10 @@ class UserModel(db.Model):
     isactive = db.Column(db.Boolean, default=True, nullable=False)
     tourist = db.relationship("TouristInfoModel", back_populates="user",
                                 uselist=False)
+    role_id = db.Column(db.Integer, db.ForeignKey("roles.id",
+                        ondelete="CASCADE"), default=3)
+    role = db.relationship("RoleModel", back_populates = "users")
+
 
     def save_to_db(self):
         db.session.add(self)
@@ -25,6 +29,7 @@ class UserModel(db.Model):
                 'first_name': self.first_name,
                 'username': self.username,
                 'email': self.email,
+                'role_id': self.role_id,
                 'isactive': self.isactive
                 }
     def username_json(self):

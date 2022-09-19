@@ -7,10 +7,10 @@ INSERT INTO tourist_detail (tourist_id, detail_id) VALUES
 (6, 4),
 (2, 4),
 (8, 4),
-(10, 4),
+(7, 4),
 (1, 5),
 (1, 6),
 (4, 6),
 (5, 6),
 (7, 6),
-(9, 6);
+(8, 6);
