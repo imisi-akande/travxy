@@ -1,6 +1,7 @@
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from flask_restful import Resource, request
 from travxy.models.category import CategoryModel
+from travxy.models.user import UserModel
 from travxy.models.tourist import TouristInfoModel
 
 class Category(Resource):
@@ -26,7 +27,7 @@ class AdminCategoryList(Resource):
     @jwt_required()
     def post(self):
         user_id = get_jwt_identity()
-        current_user = TouristInfoModel.find_by_user_id(user_id)
+        current_user = UserModel.query.get(user_id)
         if current_user.role_id != 1 and current_user.role_id != 2:
             return {'message': 'Unauthorized User'}, 401
         name = request.json.get('name')
@@ -35,7 +36,6 @@ class AdminCategoryList(Resource):
         if CategoryModel.find_by_name(name):
             return {'message':
                     "A category with name '{}' already exists".format(name)}, 400
-
         category = CategoryModel(name=name)
         try:
             category.save_to_db()
@@ -43,27 +43,33 @@ class AdminCategoryList(Resource):
             return {'message': 'An error occured while creating category'}, 500
         return category.json(), 201
 
+
+class AdminCategory(Resource):
     @jwt_required()
-    def put(self):
+    def put(self, id):
         user_id = get_jwt_identity()
-        current_user = TouristInfoModel.find_by_user_id(user_id)
+        current_user = UserModel.query.get(user_id)
         if current_user.role_id != 1 and current_user.role_id != 2:
             return {'message': 'Unauthorized User'}, 401
-        id = request.json.get('id')
         name = request.json.get('name')
         category_instance = CategoryModel.query.get(id)
         category_instance.name = name
+        categories = ['Business', 'Adventure', 'Wildlife', 'Medical', 'Wellness',
+                    'Pilgrimage and Spiritual', 'Cultural', 'Dark', 'Culinary',
+                    'Celibrity', 'Educational', 'Cruise', 'Rural', 'Beach',
+                    'Space', 'Lake', 'Park']
+        if category_instance.name in categories:
+            return {'message': f"{category_instance.name} already exist"}
         try:
             category_instance.save_to_db()
-        except:
-            return {'message': 'An error occured while updating category'}, 500
-        return category_instance.json(), 201
+        except Exception as e:
+            return str(e), 500
+        return category_instance.json(), 200
 
-class AdminCategory(Resource):
     @jwt_required(fresh=True)
     def delete(self, id):
         user_id = get_jwt_identity()
-        current_user = TouristInfoModel.find_by_user_id(user_id)
+        current_user = UserModel.query.get(user_id)
         if not current_user:
             return {'message': 'User must be a registered tourist'}
         if current_user.role_id != 1 and current_user.role_id != 2:

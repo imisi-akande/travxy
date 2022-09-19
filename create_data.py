@@ -16,7 +16,7 @@ engine = create_engine(f"postgresql://{DB_User}:{DB_Password}@{DB_Host}/{DB_Name
 try:
     with engine.connect() as conn:
         base_path = "./data_helper/"
-        paths = ["users.sql", "roles.sql", "tourists.sql", "categories.sql",
+        paths = ["roles.sql", "users.sql", "tourists.sql", "categories.sql",
                 "places.sql", "place_category.sql", "details.sql",
                 "tourist_detail.sql", "tourist_experience.sql"]
         for path in paths:

@@ -6,8 +6,9 @@ from flask_jwt_extended import JWTManager
 from .resources.role import RoleList
 from travxy.resources.user import (UserRegister, UserLogin, UserLogout, 
                                      TokenRefresh, AdminGetUserList,
-                                    AdminGetUser, UserList, User)
-from travxy.resources.place import (Place, PlaceList, SearchPlaces, AdminForPlaces)
+                                    AdminGetUser, AdminAddUser, UserList, User)
+from travxy.resources.place import (Place, PlaceList, SearchPlaces, 
+                                    AdminForPlace, AdminForPlaces)
 from travxy.resources.category import (Category, CategoryList, 
                                         AdminCategoryList, AdminCategory)
 from travxy.resources.tourist import (Tourist, TouristDetail, TouristList, 
@@ -78,6 +79,8 @@ def create_app(config_class=DevelopmentConfig):
     api.add_resource(Place, '/place/<int:place_id>')
     api.add_resource(PlaceList, '/places')
     api.add_resource(SearchPlaces, '/place-details/search/<search_term>')
+    api.add_resource(AdminForPlace, '/admin/place/<int:place_id>')
+
     api.add_resource(AdminForPlaces, '/admin/places')
 
     api.add_resource(UserRegister, '/register')
@@ -86,6 +89,7 @@ def create_app(config_class=DevelopmentConfig):
     api.add_resource(UserLogout, '/logout')
     api.add_resource(UserList, '/users')
     api.add_resource(AdminGetUserList, '/admin/users')
+    api.add_resource(AdminAddUser, '/admin/user')
     api.add_resource(AdminGetUser, '/admin/user/<int:user_id>')
     api.add_resource(TokenRefresh, '/refresh')
 

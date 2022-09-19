@@ -1,3 +1,4 @@
+from travxy.models.role import RoleModel
 from travxy.models.tourist import TouristInfoModel
 from travxy.models.place import PlaceModel
 from travxy.models.user import UserModel
@@ -116,20 +117,19 @@ class AdminTouristList(Resource):
     @jwt_required()
     def get(self):
         user_id = get_jwt_identity()
-        tourist_user = TouristInfoModel.find_by_user_id(user_id)
-        if tourist_user.role_id == 1 or tourist_user.role_id == 2:
+        current_user = UserModel.query.get(user_id)
+        if current_user.role_id == 1 or current_user.role_id == 2:
             tourists = TouristInfoModel.query.join(UserModel,
                                                     TouristInfoModel.user).all()
-            return {'tourists': [tourist.json_with_role()
+            return {'tourists': [tourist.json_with_user_detail()
                                         for tourist in tourists]}
         return {'message': 'Unauthorized User'}
 
     @jwt_required()
     def post(self):
         current_user_id = get_jwt_identity()
-        current_user = TouristInfoModel.find_by_user_id(current_user_id)
-        if current_user is None:
-            return {'message': 'User must be a registered tourist'}
+        current_user = UserModel.query.get(current_user_id)
+
         if current_user.role_id != 1 and current_user.role_id != 2:
             return {'message': 'Unauthorized User'}
         user_id = request.json.get('user_id')
@@ -137,8 +137,7 @@ class AdminTouristList(Resource):
 
         nationality = request.json.get('nationality')
         gender = request.json.get('gender')
-        role_id = request.json.get('role_id')
-        if not all([user_id, nationality, gender, role_id]):
+        if not all([user_id, nationality, gender]):
             return {'message': 'Missing Fields required'}, 400
 
         if user_instance is None:
@@ -149,19 +148,17 @@ class AdminTouristList(Resource):
                 "A tourist with userid '{}' already exists".format(user_id)}, 400
 
         tourist = TouristInfoModel(nationality=nationality, gender=gender,
-                                   user_id=user_id, role_id=role_id)
+                                   user_id=user_id)
         try:
             tourist.save_to_db()
         except:
             return {'message': 'An error occured while creating tourists'}, 500
-        return tourist.json_with_role(), 201
+        return tourist.json_with_user_detail(), 201
 
     @jwt_required()
     def put(self):
         user_id = get_jwt_identity()
-        current_user = TouristInfoModel.find_by_user_id(user_id)
-        if current_user is None:
-            return {'message': 'User must be a registered tourist'}
+        current_user = UserModel.query.get(user_id)
         if current_user.role_id != 1 and current_user.role_id != 2:
             return {'message': 'Unauthorized User'}
         tourist_id = request.json.get('tourist_id')
@@ -170,37 +167,33 @@ class AdminTouristList(Resource):
         if tourist_instance is None:
             return {'message': 'tourist id does not exist'}, 400
 
-        if current_user.role_id != 1 and tourist_instance.role_id == 1:
-            return {'message': 'Only super admins are allowed'}, 400
+        if current_user.role_id != 1 and current_user.role_id != 2:
+            return {'message': 'Unauthorized User'}, 401
 
-        if tourist_instance.role_id == 2 and current_user.role_id ==2:
-            return {'message': 'Admin cannot edit self or other Admins'}, 400
         nationality = request.json.get('nationality')
         gender = request.json.get('gender')
-        role_id = request.json.get('role_id')
-        if not all([tourist_id, nationality, gender, role_id]):
+        if not all([tourist_id, nationality, gender]):
             return {'message': 'Missing Fields required'}
 
         tourist_instance.nationality = nationality
         tourist_instance.gender = gender
-        tourist_instance.role_id = role_id
 
         try:
             tourist_instance.save_to_db()
         except:
             return {'message': 'An error occured while editing tourists'}, 500
-        return tourist_instance.json_with_role()
+        return tourist_instance.json_with_user_detail()
 
 class AdminForSpecificTourist(Resource):
     @jwt_required()
     def get(self, tourist_id):
         user_id = get_jwt_identity()
-        current_user = TouristInfoModel.find_by_user_id(user_id)
+        current_user = UserModel.query.get(user_id)
         if current_user is None:
             return {'message': 'User must be a registered tourist'}
         tourist = TouristInfoModel.query.get(tourist_id)
         if tourist is None:
             return {'message': 'tourist does not exist'}, 404
         if current_user.role_id == 1 or current_user.role_id == 2:
-            return tourist.json_with_role()
+            return tourist.json_with_user_detail()
         return {'message': 'Unauthorized User'}

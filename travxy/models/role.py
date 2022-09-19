@@ -5,13 +5,13 @@ class RoleModel(db.Model):
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True)
-    tourists = db.relationship('TouristInfoModel', back_populates='role',
+    users = db.relationship('UserModel', back_populates='role',
                                 lazy='dynamic')
 
     def json(self):
         return {'id': self.id, 'name': self.name,
-                'tourists': [tourist.json_with_user_detail()
-                                for tourist in self.tourists.all()]}
+                'users': [user.json()
+                                for user in self.users.all()]}
     @classmethod
     def find_by_id(cls, id):
         return cls.query.filter_by(id=id).first()
