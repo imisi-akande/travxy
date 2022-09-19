@@ -38,24 +38,20 @@ class AdminGetUser(Resource):
     def get(self, user_id):
         current_identity = get_jwt_identity()
         tourist_user = TouristInfoModel.find_by_user_id(current_identity)
+        input_user_is_tourist = TouristInfoModel.find_by_user_id(user_id)
         if tourist_user is None:
             return {'message':
                         'You must register as a tourist to see other tourists'}
+
         if (current_identity) and (tourist_user.role_id == 1
                                     or tourist_user.role_id == 2):
             user = UserModel.find_by_id(user_id)
             if not user:
                 return {'message': 'User not found'}, 404
+            if not input_user_is_tourist:
+                return user.json()
             tourist_instance = TouristInfoModel.find_by_user_id(user_id)
-            user_result = {'id': user.id,
-                            'last_name': user.last_name,
-                            'first_name': user.first_name,
-                            'username': user.username,
-                            'email': user.email,
-                            'isactive': user.isactive,
-                            'nationality': tourist_instance.nationality,
-                            'gender': tourist_instance.gender }
-            return user_result
+            return tourist_instance.json_with_user_detail()
         return {'message': 'Unauthorized User'}
 
     @jwt_required()
@@ -93,7 +89,7 @@ class User(Resource):
         user = UserModel.find_by_id(user_id)
         if not user or user.isactive==False:
             return {'message': 'User not found'}, 404
-        return user.username_json()
+        return user.username_json(), 200
 
     @jwt_required()
     def delete(self, user_id):
@@ -158,11 +154,11 @@ class UserList(Resource):
         tourist_user = TouristInfoModel.find_by_user_id(current_identity)
         if tourist_user is None:
             return {'message':
-                    'You must register as a tourist to view all other tourists'}
+                    'You must register as a tourist to view all other tourists'}, 401
         users = {'users': [user.username_json()
                             for user in UserModel.query.filter(
                                 UserModel.isactive==True).all()]}
-        return users
+        return users, 200
 
 class TokenRefresh(Resource):
     @jwt_required(refresh=True)
