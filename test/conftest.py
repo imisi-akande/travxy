@@ -7,7 +7,7 @@ from travxy.models.tourist import TouristInfoModel
 from travxy.models.user import UserModel
 from travxy.models.role import RoleModel
 
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, create_refresh_token
 from travxy.config import TestingConfig
 import psycopg2
 
@@ -76,6 +76,14 @@ def create_jwt_token(create_user):
     return _
 
 @pytest.fixture
+def create_refresh_jwt_token(create_user):
+    def _(user=None):
+        if not user:
+            user = create_user()
+        return user, create_refresh_token(identity=user.id)
+    return _
+
+@pytest.fixture
 def create_tourist(create_user):
     def _(user=None, tourist_details=None):
         if not user:
@@ -96,16 +104,15 @@ def create_super_admin():
     def _(user_details=None):
         if not user_details:
             user_details = {
-                "id": 2,
-                "last_name": "Kit",
-                "first_name": "Paul",
-                "username": "kit",
-                "email": "kit@gmail.com",
-                "password": "kit"
+                "last_name": "Test",
+                "first_name": "SuperAdmin",
+                "username": "superadmin",
+                "email": "superadmin@gmail.com",
+                "role_id": 1,
+                "password": "superadmin"
             }
         user_details["password"] = UserModel.generate_hash(user_details["password"])
         super_user = UserModel(**user_details)
-        print(super_user.id, 'the adminnnn')
         super_user.save_to_db()
         return super_user
     return _
@@ -119,33 +126,16 @@ def create_super_user_jwt_token(create_super_admin):
     return _
 
 @pytest.fixture
-def add_super_admin_to_tourist():
-    def _(tourist_details=None):
-        if not tourist_details:
-            # create_super_admin()
-            tourist_details = {
-                "id": 2,
-                "nationality": "Ethiopia",
-                "gender": "Male",
-                "role_id": 1,
-                "user_id": 2
-            }
-        tourist = TouristInfoModel(**tourist_details)
-        tourist.save_to_db()
-        return tourist
-    return _
-
-@pytest.fixture
-def create_admin_user():
+def create_admin():
     def _(user_details=None):
         if not user_details:
             user_details = {
-                "id": 3,
-                "last_name": "Tyler",
-                "first_name": "Sarah",
-                "username": "tyler",
-                "email": "tyler@gmail.com",
-                "password": "tyler"
+                "last_name": "Test",
+                "first_name": "Admin",
+                "username": "admin",
+                "email": "admin@gmail.com",
+                "role_id": 2,
+                "password": "admin"
             }
         user_details["password"] = UserModel.generate_hash(user_details["password"])
         user = UserModel(**user_details)
@@ -154,27 +144,27 @@ def create_admin_user():
     return _
 
 @pytest.fixture
-def create_admin_user_jwt_token(create_admin_user):
+def create_admin_jwt_token(create_admin):
     def _(admin_user=None):
         if not admin_user:
-            admin_user = create_admin_user()
+            admin_user = create_admin()
         return admin_user, create_access_token(identity=admin_user.id, fresh=True)
     return _
 
-@pytest.fixture
-def add_admin_to_tourist():
-    def _(tourist_details=None):
-        if not tourist_details:
-            # create_admin()
-            tourist_details = {
-                "id": 3,
-                "nationality": "Zambia",
-                "gender": "Female",
-                "user_id": 3,
-                "role_id": 2
-            }
-        tourist = TouristInfoModel(**tourist_details)
-        tourist.save_to_db()
-        return tourist
-    return _
+# @pytest.fixture
+# def add_admin_to_tourist():
+#     def _(tourist_details=None):
+#         if not tourist_details:
+#             # create_admin()
+#             tourist_details = {
+#                 "id": 3,
+#                 "nationality": "Zambia",
+#                 "gender": "Female",
+#                 "user_id": 3,
+#                 "role_id": 2
+#             }
+#         tourist = TouristInfoModel(**tourist_details)
+#         tourist.save_to_db()
+#         return tourist
+#     return _
 

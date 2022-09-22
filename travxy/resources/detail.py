@@ -55,13 +55,25 @@ class DetailList(Resource):
         return detail.json(), 201
 
     @jwt_required()
-    def put(self):
+    def get(self):
         current_identity = get_jwt_identity()
         detail_author = TouristInfoModel.find_by_user_id(current_identity)
         if detail_author is None:
             return {'message': 'User is not a registered tourist'}, 401
 
-        detail_id = request.json.get('detail_id')
+        detail_instances = DetailModel.query.join(TouristInfoModel, UserModel
+                                    ).filter(UserModel.isactive==True).all()
+        details = [detail.with_tourist_json() for detail in detail_instances]
+        return details
+
+class Detail(Resource):
+    @jwt_required()
+    def put(self, detail_id):
+        current_identity = get_jwt_identity()
+        detail_author = TouristInfoModel.find_by_user_id(current_identity)
+        if detail_author is None:
+            return {'message': 'User is not a registered tourist'}, 401
+
         departure = request.json.get('departure')
         transportation = request.json.get('transportation')
         travel_buddies = request.json.get('travel_buddies')
@@ -106,14 +118,6 @@ class DetailList(Resource):
                         'An error occured while trying to update details'}, 500
         return detail_instance.with_tourist_json()
 
-    @jwt_required()
-    def get(self):
-        detail_instances = DetailModel.query.join(TouristInfoModel, UserModel
-                                    ).filter(UserModel.isactive==True).all()
-        details = [detail.with_tourist_json() for detail in detail_instances]
-        return details
-
-class Detail(Resource):
     @jwt_required()
     def delete(self, detail_id):
         current_identity = get_jwt_identity()

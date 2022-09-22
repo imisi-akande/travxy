@@ -162,6 +162,21 @@ class User(Resource):
         user.save_to_db()
         return {'message': 'User deleted succesfully'}, 200
 
+class UserAccount(Resource):
+     @jwt_required()
+     def get(self, user_id):
+        current_identity = get_jwt_identity()
+        tourist_user = TouristInfoModel.find_by_user_id(current_identity)
+        if current_identity != user_id:
+            return {'message': 'Unauthorized user'}, 401
+        if tourist_user is None:
+            return {'message':
+                        'Register as a tourist to see account profile'}, 401
+        user = UserModel.find_by_id(user_id)
+        if not user or user.isactive==False:
+            return {'message': 'User not found'}, 404
+        return user.username_json(), 200
+
 class UserLogin(Resource):
     def post(self):
         email = request.json.get('email')

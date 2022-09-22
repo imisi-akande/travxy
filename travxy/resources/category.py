@@ -43,16 +43,15 @@ class AdminCategoryList(Resource):
             return {'message': 'An error occured while creating category'}, 500
         return category.json(), 201
 
-
 class AdminCategory(Resource):
     @jwt_required()
-    def put(self, id):
+    def put(self, category_id):
         user_id = get_jwt_identity()
         current_user = UserModel.query.get(user_id)
         if current_user.role_id != 1 and current_user.role_id != 2:
             return {'message': 'Unauthorized User'}, 401
         name = request.json.get('name')
-        category_instance = CategoryModel.query.get(id)
+        category_instance = CategoryModel.query.get(category_id)
         category_instance.name = name
         categories = ['Business', 'Adventure', 'Wildlife', 'Medical', 'Wellness',
                     'Pilgrimage and Spiritual', 'Cultural', 'Dark', 'Culinary',
@@ -67,14 +66,14 @@ class AdminCategory(Resource):
         return category_instance.json(), 200
 
     @jwt_required(fresh=True)
-    def delete(self, id):
+    def delete(self, category_id):
         user_id = get_jwt_identity()
         current_user = UserModel.query.get(user_id)
         if not current_user:
             return {'message': 'User must be a registered tourist'}
         if current_user.role_id != 1 and current_user.role_id != 2:
             return {'message': 'Unauthorized User'}, 401
-        category = CategoryModel.find_by_id(id)
+        category = CategoryModel.find_by_id(category_id)
         if category is None:
             return {'message': 'Category does not exist'}, 400
         try:
