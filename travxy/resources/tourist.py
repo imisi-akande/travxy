@@ -13,11 +13,30 @@ class Tourist(Resource):
         user_id = get_jwt_identity()
         current_user = TouristInfoModel.find_by_user_id(user_id)
         if current_user is None:
-            return {'message': 'User must be a registered tourist'}
+            return {'message': 'User must be a registered tourist'}, 400
         tourist = TouristInfoModel.query.get(tourist_id)
         if tourist is None or tourist.user.isactive == False:
             return {'message': 'tourist does not exist'}, 404
         return tourist.json_with_user_name()
+
+    @jwt_required()
+    def put(self, tourist_id):
+        user_id = get_jwt_identity()
+        tourist_user = TouristInfoModel.find_by_user_id(user_id)
+        if tourist_user is None:
+            return {'message': 'User must be a registered tourist'}, 400
+        if tourist_id != tourist_user.id:
+            return {'message': 'Unauthorized User'}, 401
+        nationality = request.json.get('nationality')
+        gender = request.json.get('gender')
+        tourist_user.nationality = nationality
+        tourist_user.gender = gender
+        try:
+            tourist_user.save_to_db()
+        except:
+            return {'message': 'An error occured while editing tourists'}, 500
+        return tourist_user.json()
+
 
 class TouristList(Resource):
     @jwt_required()
@@ -46,22 +65,6 @@ class TouristList(Resource):
         except Exception as e:
             return str(e), 500
         return tourist.json(), 201
-
-    @jwt_required()
-    def put(self):
-        user_id = get_jwt_identity()
-        tourist_user = TouristInfoModel.find_by_user_id(user_id)
-        if tourist_user is None:
-            return {'message': 'User must be a registered tourist'}
-        nationality = request.json.get('nationality')
-        gender = request.json.get('gender')
-        tourist_user.nationality = nationality
-        tourist_user.gender = gender
-        try:
-            tourist_user.save_to_db()
-        except:
-            return {'message': 'An error occured while editing tourists'}, 500
-        return tourist_user.json()
 
 class TouristDetail(Resource):
     @jwt_required()
@@ -155,13 +158,26 @@ class AdminTouristList(Resource):
             return {'message': 'An error occured while creating tourists'}, 500
         return tourist.json_with_user_detail(), 201
 
+class AdminForSpecificTourist(Resource):
     @jwt_required()
-    def put(self):
+    def get(self, tourist_id):
+        user_id = get_jwt_identity()
+        current_user = UserModel.query.get(user_id)
+        if current_user is None:
+            return {'message': 'User must be a registered tourist'}
+        tourist = TouristInfoModel.query.get(tourist_id)
+        if tourist is None:
+            return {'message': 'tourist does not exist'}, 404
+        if current_user.role_id == 1 or current_user.role_id == 2:
+            return tourist.json_with_user_detail()
+        return {'message': 'Unauthorized User'}
+
+    @jwt_required()
+    def put(self, tourist_id):
         user_id = get_jwt_identity()
         current_user = UserModel.query.get(user_id)
         if current_user.role_id != 1 and current_user.role_id != 2:
             return {'message': 'Unauthorized User'}
-        tourist_id = request.json.get('tourist_id')
 
         tourist_instance = TouristInfoModel.query.get(tourist_id)
         if tourist_instance is None:
@@ -184,16 +200,3 @@ class AdminTouristList(Resource):
             return {'message': 'An error occured while editing tourists'}, 500
         return tourist_instance.json_with_user_detail()
 
-class AdminForSpecificTourist(Resource):
-    @jwt_required()
-    def get(self, tourist_id):
-        user_id = get_jwt_identity()
-        current_user = UserModel.query.get(user_id)
-        if current_user is None:
-            return {'message': 'User must be a registered tourist'}
-        tourist = TouristInfoModel.query.get(tourist_id)
-        if tourist is None:
-            return {'message': 'tourist does not exist'}, 404
-        if current_user.role_id == 1 or current_user.role_id == 2:
-            return tourist.json_with_user_detail()
-        return {'message': 'Unauthorized User'}

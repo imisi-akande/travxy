@@ -48,6 +48,47 @@ class AdminForPlace(Resource):
         return {'message': 'Place does not exist'}, 404
 
     @jwt_required()
+    def put(self, place_id):
+        user_id = get_jwt_identity()
+        current_user = UserModel.query.get(user_id)
+        if current_user.role_id != 1 and current_user.role_id != 2:
+            return {'message': 'Unauthorized User'}, 401
+        name = request.json.get('name')
+        location = request.json.get('location')
+        country = request.json.get('country')
+        about = request.json.get('about')
+        category_list = request.json.get('categories')
+
+        place = PlaceModel.find_by_id(place_id)
+        if place is None:
+            return {'message': 'Place does not exist'}
+        if not all([place_id, name, location, country, about, category_list]):
+            return {'message': 'Missing fields required'}, 400
+        categories_to_be_added = CategoryModel.query.filter(
+                                CategoryModel.id.in_(category_list)).all()
+
+        place.place_id = place_id
+        place.name = name
+        place.location = location
+        place.country = country
+        place.about = about
+
+        new_categories = list(set(categories_to_be_added) - set(place.categories_info.all()))
+        categories_to_be_replaced = list(set(place.categories_info.all()) - set(categories_to_be_added))
+
+        for category in place.categories_info.all():
+            if category in categories_to_be_replaced:
+                place.categories_info.remove(category)
+        place.categories_info.extend(new_categories)
+
+        try:
+            place.save_to_db()
+        except:
+            return {'message':
+                     'An error occured while trying to update the place'}, 500
+        return place.with_category_json()
+
+    @jwt_required()
     def delete(self, place_id):
         user_id = get_jwt_identity()
         current_user = UserModel.query.get(user_id)
@@ -88,45 +129,4 @@ class AdminForPlaces(Resource):
                     'An error occured while trying to insert the place'}, 500
         return place.with_category_json(), 201
 
-    @jwt_required()
-    def put(self):
-        user_id = get_jwt_identity()
-        current_user = UserModel.query.get(user_id)
-        if current_user.role_id != 1 and current_user.role_id != 2:
-            return {'message': 'Unauthorized User'}, 401
-        place_id = request.json.get('place_id')
-        name = request.json.get('name')
-        location = request.json.get('location')
-        country = request.json.get('country')
-        about = request.json.get('about')
-        category_list = request.json.get('categories')
-
-        place = PlaceModel.find_by_id(place_id)
-        if place is None:
-            return {'message': 'Place does not exist'}
-        if not all([place_id, name, location, country, about, category_list]):
-            return {'message': 'Missing fields required'}, 400
-        categories_to_be_added = CategoryModel.query.filter(
-                                CategoryModel.id.in_(category_list)).all()
-
-        place.place_id = place_id
-        place.name = name
-        place.location = location
-        place.country = country
-        place.about = about
-
-        new_categories = list(set(categories_to_be_added) - set(place.categories_info.all()))
-        categories_to_be_replaced = list(set(place.categories_info.all()) - set(categories_to_be_added))
-
-        for category in place.categories_info.all():
-            if category in categories_to_be_replaced:
-                place.categories_info.remove(category)
-        place.categories_info.extend(new_categories)
-
-        try:
-            place.save_to_db()
-        except:
-            return {'message':
-                     'An error occured while trying to update the place'}, 500
-        return place.with_category_json()
-
+    
