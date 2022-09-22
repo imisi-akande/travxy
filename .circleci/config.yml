@@ -4,15 +4,19 @@ orbs:
 jobs:
   build-and-test:
     docker:
-      - image: cimg/python:3.10.4
+      - image: circleci/python:3.9
     steps:
       - checkout
-      - python/install-packages:
-          pkg-manager: pip
+       - run:
+          command: |
+            python -m venv travxy_env
+            source travxy_env/bin/activate
+            pip install -r requirements.txt
+          name: Install Dependencies
       - run:
-          name: Run tests
-          command: pytest
-workflows:
-  sample:
-    jobs:
-      - build-and-test
+          command: |
+            source travxy_env/bin/activate
+            coverage run -m pytest
+            coverage report -m
+            coveralls
+          name: Run test with coverage

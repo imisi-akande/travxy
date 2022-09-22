@@ -5,3 +5,5 @@ python-dotenv==0.20.0
 Flask-Bcrypt==1.0.1
 SQLAlchemy==1.4.39
 pytest==7.1.2
+coverage==6.4.4
+coveralls==3.3.1
