@@ -17,7 +17,8 @@ def app():
     username = os.environ.get('TESTING_POSTGRES_USER')
     password = os.environ.get('TESTING_POSTGRES_PW')
     db_host = os.environ.get('TESTING_POSTGRES_HOST')
-    conn = psycopg2.connect(dbname='postgres', user=username,
+    db_name = os.environ.get('TESTING_DB_NAME')
+    conn = psycopg2.connect(dbname=db_name, user=username,
                                 password=password, host=db_host)
     conn.autocommit = True
     cursor = conn.cursor()
