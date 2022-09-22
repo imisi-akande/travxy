@@ -3,6 +3,10 @@ jobs:
   build:
     docker:
       - image: circleci/python:3.9
+      - image: cimg/postgres:14.0
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: trav_api_test
     steps:
       - checkout
       - run:
