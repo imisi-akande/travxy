@@ -4,8 +4,8 @@ orbs:
 jobs:
   build:
     docker:
-      - image: cimg/python:3.9
-      - image: cimg/postgres:9.6.2
+      - image: cimg/python:3.10
+      - image: cimg/postgres:14.0
         environment:
           TESTING_POSTGRES_USER: postgres
           TESTING_POSTGRES_PW: password123
