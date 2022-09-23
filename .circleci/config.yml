@@ -4,19 +4,10 @@ orbs:
 jobs:
   build:
     docker:
-      - image: cimg/python:3.10
-        environment:
-          TEST_DATABASE_URL: postgresql://postgres@localhost/circle_test
-        auth:
-          username: mydockerhub-user
-          password: $DOCKERHUB_PASSWORD  
-
-      - image: cimg/postgres:14.0
+      - image: circleci/python:3.9
+      - image: circleci/postgres:9.6.2
         environment:
           POSTGRES_USER: postgres
-        auth:
-          username: mydockerhub-user
-          password: $DOCKERHUB_PASSWORD 
     steps:
       - checkout
       - run:
