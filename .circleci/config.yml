@@ -5,8 +5,20 @@ jobs:
   build:
     docker:
       - image: circleci/python:3.9
+        environment:
+          TEST_DATABASE_URL: postgresql://imisi@localhost/postgres
+      - image: circleci/postgres:9.6.2
+        environment:
+          TESTING_POSTGRES_HOST: localhost
+          TESTING_DB_NAME: postgres
+          TESTING_POSTGRES_USER: imisi
+          POSTGRES_HOST_AUTH_METHOD: trust
     steps:
       - checkout
+      - python/load-cache
+      - run:
+          name: Wait for db to run
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
       - run:
           command: |
             python -m venv trav_env
