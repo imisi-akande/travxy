@@ -7,10 +7,10 @@ jobs:
       - image: circleci/python:3.9
       - image: circleci/postgres:9.6.2
         environment:
-          POSTGRES_USER: postgres
-          POSTGRES_PW: password123
-          POSTGRES_HOST: localhost
-          POSTGRES_DB: postgres
+          TESTING_POSTGRES_USER: postgres
+          TESTING_POSTGRES_PW: password123
+          TESTING_POSTGRES_HOST: localhost
+          TESTING_DB_NAME: postgres
     steps:
       - checkout
       - run:

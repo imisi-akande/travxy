@@ -14,10 +14,10 @@ import psycopg2
 
 @pytest.fixture(scope="session")
 def app():
-    username = os.environ.get('POSTGRES_USER')
-    password = os.environ.get('POSTGRES_PW')
-    db_host = os.environ.get('POSTGRES_HOST')
-    db_name = os.environ.get('POSTGRES_DB')
+    username = os.environ.get('TESTING_POSTGRES_USER')
+    password = os.environ.get('TESTING_POSTGRES_PW')
+    db_host = os.environ.get('TESTING_POSTGRES_HOST')
+    db_name = os.environ.get('TESTING_DB_NAME')
     conn = psycopg2.connect(dbname=db_name, user=username,
                                 password=password, host=db_host)
     conn.autocommit = True
