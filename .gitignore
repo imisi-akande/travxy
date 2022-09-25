@@ -5,3 +5,4 @@ trav_data.db
 .env
 database.ini
 migrations
+.pytest_cache

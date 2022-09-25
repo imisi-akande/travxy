@@ -1,7 +1,11 @@
 Flask-JWT-Extended==4.4.2
 Flask-RESTful==0.3.9
 Flask-SQLAlchemy==2.5.1
+Flask-Migrate==3.1.0
 python-dotenv==0.20.0
 Flask-Bcrypt==1.0.1
 SQLAlchemy==1.4.39
+psycopg2-binary==2.9.3
 pytest==7.1.2
+coverage==6.4.4
+coveralls==3.3.1

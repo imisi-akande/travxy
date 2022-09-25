@@ -1,18 +1,35 @@
 version: 2.1
-orbs:
-  python: circleci/python@2.0.3
 jobs:
-  build-and-test:
+  build:
     docker:
-      - image: cimg/python:3.10.4
+      - image: cimg/python:3.10
+        environment:
+          TEST_DATABASE_URL: postgresql://postgres@localhost/circle_test
+        auth:
+          username: mydockerhub-user
+          password: $DOCKERHUB_PASSWORD
+      - image: cimg/postgres:14.0
+        environment:
+          POSTGRES_USER: postgres
+        auth:
+          username: mydockerhub-user
+          password: $DOCKERHUB_PASSWORD
     steps:
       - checkout
-      - python/install-packages:
-          pkg-manager: pip
+  
       - run:
-          name: Run tests
-          command: pytest
-workflows:
-  sample:
-    jobs:
-      - build-and-test
+          command: |
+            python -m venv trav_env
+            source trav_env/bin/activate
+            pip install -r requirements.txt
+          name: Install Dependencies
+      - run:
+          command: |
+            source trav_env/bin/activate
+            coverage run -m pytest
+            coverage report -m
+            coveralls
+          name: Run test with coverage
+
+
+
