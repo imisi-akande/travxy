@@ -17,13 +17,13 @@ def app():
     username = os.environ.get('TESTING_POSTGRES_USER')
     password = os.environ.get('TESTING_POSTGRES_PW')
     db_host = os.environ.get('TESTING_POSTGRES_HOST')
-    db_name = os.environ.get('TESTING_DB_NAME')
-    conn = psycopg2.connect(dbname=db_name, user=username,
+    db_name = os.environ.get('TESTING_POSTGRES_DB')
+    conn = psycopg2.connect(dbname="postgres", user=username,
                                 password=password, host=db_host)
     conn.autocommit = True
     cursor = conn.cursor()
-    cursor.execute("DROP DATABASE IF EXISTS trav_api_test")
-    cursor.execute("CREATE DATABASE trav_api_test")
+    cursor.execute(f"DROP DATABASE IF EXISTS {db_name}")
+    cursor.execute(f"CREATE DATABASE {db_name}")
     cursor.close()
     conn.close()
     app = create_app(TestingConfig)
