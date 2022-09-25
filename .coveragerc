@@ -1,0 +1,2 @@
+[run]
+omit = ./trav_env/*,*tests*,*__init__.py,*migrations*,
