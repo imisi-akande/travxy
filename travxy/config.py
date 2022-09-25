@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+from sqlalchemy.engine.url import URL
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 env_setting = load_dotenv(os.path.join(basedir, '.env'))
@@ -13,7 +14,10 @@ def get_env_variable(name):
         raise Exception(message)
 
 def create_db_url(user, pw, host, port, db):
-    return f"postgresql://{user}:{pw}@{host}:{port}/{db}"
+    url = URL.create(drivername="postgresql+psycopg2", username=user, password=pw,
+                        host=host, port=port, database=db)
+    return url
+    # return f"postgresql://{user}:{pw}@{host}:{port}/{db}"
 
 
 # import .env variables for DB connection
