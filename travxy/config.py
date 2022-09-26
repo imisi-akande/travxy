@@ -17,8 +17,6 @@ def create_db_url(user, pw, host, port, db):
     url = URL.create(drivername="postgresql+psycopg2", username=user, password=pw,
                         host=host, port=port, database=db)
     return url
-    # return f"postgresql://{user}:{pw}@{host}:{port}/{db}"
-
 
 # import .env variables for DB connection
 def get_env_db_url(env_setting):
