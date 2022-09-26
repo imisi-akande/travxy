@@ -40,10 +40,6 @@ class UserModel(db.Model):
                 'username': self.username,
                 }
 
-    def for_admin_with_tourist_json(self):
-        return {**self.json(),
-                    'tourist_status': self.tourist.json_with_tourist_status()}
-
     def delete_from_db(self):
         db.session.delete(self)
         db.session.commit()

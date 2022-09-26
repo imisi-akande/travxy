@@ -1,7 +1,8 @@
 from re import T
 import pytest
 import os
-from travxy import create_app, db
+from travxy import create_app
+from travxy.db import db
 from sqlalchemy.orm import close_all_sessions
 from travxy.models.tourist import TouristInfoModel
 from travxy.models.user import UserModel

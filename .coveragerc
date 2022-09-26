@@ -1,2 +1,2 @@
 [run]
-omit = ./trav_env/*,*tests*,*__init__.py,*migrations*,
+omit = ./trav_env/*,*tests*,*config.py,*migrations*
