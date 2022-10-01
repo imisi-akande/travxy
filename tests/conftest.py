@@ -152,21 +152,3 @@ def create_admin_jwt_token(create_admin):
             admin_user = create_admin()
         return admin_user, create_access_token(identity=admin_user.id, fresh=True)
     return _
-
-# @pytest.fixture
-# def add_admin_to_tourist():
-#     def _(tourist_details=None):
-#         if not tourist_details:
-#             # create_admin()
-#             tourist_details = {
-#                 "id": 3,
-#                 "nationality": "Zambia",
-#                 "gender": "Female",
-#                 "user_id": 3,
-#                 "role_id": 2
-#             }
-#         tourist = TouristInfoModel(**tourist_details)
-#         tourist.save_to_db()
-#         return tourist
-#     return _
-

@@ -6,7 +6,7 @@ from flask_jwt_extended import JWTManager
 from .resources.role import RoleList
 from travxy.resources.user import (UserRegister, UserLogin, UserLogout, 
                                     TokenRefresh, AdminGetUserList,
-                                    AdminGetUser, AdminAddUser, UserList, 
+                                    AdminForUser, AdminAddUser, UserList, 
                                     UserAccount, User)
 from travxy.resources.place import (Place, PlaceList, SearchPlaces, 
                                     AdminForPlace, AdminForPlaces)
@@ -91,7 +91,7 @@ def create_app(config_class=DevelopmentConfig):
     api.add_resource(UserList, '/users')
     api.add_resource(AdminGetUserList, '/admin/users')
     api.add_resource(AdminAddUser, '/admin/user')
-    api.add_resource(AdminGetUser, '/admin/user/<int:user_id>')
+    api.add_resource(AdminForUser, '/admin/user/<int:user_id>')
     api.add_resource(UserAccount, '/user/account/<int:user_id>')
     api.add_resource(TokenRefresh, '/refresh')
 
