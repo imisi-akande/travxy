@@ -39,7 +39,7 @@ class AdminAddUser(Resource):
         current_identity = get_jwt_identity()
         current_user = UserModel.query.get(current_identity)
         if current_user.role_id != 1:
-            return {'message': 'Only Super Admins are allowed'}
+            return {'message': 'Only Super Admins are allowed'}, 401
         email = request.json.get('email')
         username = request.json.get('username')
 
@@ -64,7 +64,7 @@ class AdminAddUser(Resource):
         user.save_to_db()
         return {"message": "User created succesfully"}, 201
 
-class AdminGetUser(Resource):
+class AdminForUser(Resource):
     @jwt_required()
     def put(self, user_id):
         current_identity = get_jwt_identity()
@@ -98,8 +98,8 @@ class AdminGetUser(Resource):
             if not input_user_is_tourist:
                 return user.json()
             tourist_instance = TouristInfoModel.find_by_user_id(user_id)
-            return tourist_instance.json_with_user_detail()
-        return {'message': 'Unauthorized User'}
+            return tourist_instance.json_with_user_detail(), 200
+        return {'message': 'Unauthorized User'}, 401
 
     @jwt_required()
     def delete(self, user_id):
@@ -157,7 +157,7 @@ class User(Resource):
         if not user or user.isactive == False:
             return {'message': 'User not found'}, 404
         if user.id != current_identity:
-            return {'message': 'Unauthorized User'}
+            return {'message': 'Unauthorized User'}, 401
         user.isactive = False
         user.save_to_db()
         return {'message': 'User deleted succesfully'}, 200
@@ -185,7 +185,7 @@ class UserLogin(Resource):
         if not user:
             return {'message': 'Invalid Credentials'}, 401
         if user.isactive==False:
-            return {'message': 'User account does not exist'}
+            return {'message': 'User account does not exist'}, 400
         if user and user.check_hash(password):
             access_token = create_access_token(identity=user.id,
                                                 fresh=timedelta(minutes=15))
