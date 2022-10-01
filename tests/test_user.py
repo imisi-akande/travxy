@@ -112,7 +112,6 @@ def test_non_tourist_get_user_list(client, create_jwt_token, create_user,
 
     headers = {"Authorization":f"Bearer {access_token}"}
 
-    # create_tourist(user=user)
     users = [create_user({
                 "last_name": "Test",
                 "first_name": "User",
@@ -123,7 +122,6 @@ def test_non_tourist_get_user_list(client, create_jwt_token, create_user,
     for usr in users:
         create_tourist(user=usr)
     response = client.get('/users', headers=headers)
-    response_body = response.json
     assert response.status_code==400
     assert response.json['message']=="You must register as a tourist to view all other tourists"
 
@@ -140,12 +138,39 @@ def test_get_user(client, create_jwt_token, create_user,
                 "username": f"test_user{i}",
                 "email": f"test_user{i}@gmail.com",
                 "password": "password"
-            }) for i in range(3)]
+            }) for i in range(2)]
+    for usr in users:
+        create_tourist(user=usr)
     test_user = users[1]
     response = client.get(f'/user/{test_user.id}', headers=headers)
     response_body = response.json
     assert response_body["username"]==test_user.username
     assert response.status_code==200
+
+def test_get_user_unequal_nationality(client, create_jwt_token, create_user,
+                    create_tourist):
+    user, access_token = create_jwt_token()
+
+    headers = {"Authorization":f"Bearer {access_token}"}
+
+    create_tourist(user=user)
+    users = [create_user({
+                "last_name": "Test",
+                "first_name": "User",
+                "username": f"test_user{i}",
+                "email": f"test_user{i}@gmail.com",
+                "password": "password"
+            }) for i in range(2)]
+    for usr in users:
+        create_tourist(user=usr, tourist_details = {
+                "nationality": "France",
+                "gender": "Male",
+            })
+    test_user = users[1]
+    response = client.get(f'/user/{test_user.id}', headers=headers)
+    response_body = response.json
+    assert response.status_code==400
+    assert response_body['message']=='User does not exist'
 
 def test_non_tourist_get_user(client, create_jwt_token, create_user):
     user, access_token = create_jwt_token()
