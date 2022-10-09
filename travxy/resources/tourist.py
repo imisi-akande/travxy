@@ -1,4 +1,3 @@
-from travxy.models.role import RoleModel
 from travxy.models.tourist import TouristInfoModel
 from travxy.models.place import PlaceModel
 from travxy.models.user import UserModel
@@ -10,14 +9,15 @@ from sqlalchemy.orm import joinedload
 class Tourist(Resource):
     @jwt_required()
     def get(self, tourist_id):
-        user_id = get_jwt_identity()
-        current_user = TouristInfoModel.find_by_user_id(user_id)
-        if current_user is None:
+        current_user_id = get_jwt_identity()
+        logged_in_user = TouristInfoModel.find_by_user_id(current_user_id)
+        if logged_in_user is None:
             return {'message': 'User must be a registered tourist'}, 400
-        tourist = TouristInfoModel.query.get(tourist_id)
-        if tourist is None or tourist.user.isactive == False:
+        tourist_result = TouristInfoModel.query.get(tourist_id)
+        if ((tourist_result is None) or (tourist_result.user.isactive == False)
+            or (tourist_result.nationality != logged_in_user.nationality)):
             return {'message': 'tourist does not exist'}, 404
-        return tourist.json_with_user_name()
+        return tourist_result.json_with_user_name()
 
     @jwt_required()
     def put(self, tourist_id):
@@ -37,15 +37,19 @@ class Tourist(Resource):
             return {'message': 'An error occured while editing tourists'}, 500
         return tourist_user.json()
 
-
 class TouristList(Resource):
     @jwt_required()
     def get(self):
+        current_user_id = get_jwt_identity()
+        logged_in_user = TouristInfoModel.find_by_user_id(current_user_id)
+        if logged_in_user is None:
+            return {'message': 'User must be a registered tourist'}, 400
         tourists = TouristInfoModel.query.join(UserModel,
-                                                TouristInfoModel.user).filter(
-                                                UserModel.isactive==True).all()
+                    TouristInfoModel.user).filter(
+                    TouristInfoModel.nationality==logged_in_user.nationality).filter(
+                    UserModel.isactive==True).all()
         return {'tourists': [tourist.json_with_user_name()
-                            for tourist in tourists]}
+                            for tourist in tourists]}, 200
 
     @jwt_required()
     def post(self):
@@ -79,7 +83,7 @@ class TouristDetail(Resource):
         travel_buddies = request.json.get('travel_buddies')
         estimated_cost = request.json.get('estimated_cost')
 
-        if not all([place_id, departure, transportation, estimated_cost]):
+        if not all([place_id, departure, estimated_cost]):
             return {'message': 'Missing Fields required'}, 400
         if detail_author.user.email in travel_buddies:
             return {'message':
@@ -95,13 +99,13 @@ class TouristDetail(Resource):
         if len(tourists) != len(travel_buddies):
             return {'message': 'All users must be registered tourists'}, 400
 
-        detail = DetailModel(tour_id=place_id, departure=departure,
+        detail = DetailModel(place_id=place_id, departure=departure,
                                 transportation=transportation,
                                 travel_buddies_created_by=detail_author.id,
                                 estimated_cost=estimated_cost)
         tourists.append(detail_author)
         for tourist in tourists:
-            tourist.tour_details_of_tourists.append(detail)
+            tourist.place_details_of_tourists.append(detail)
         try:
             tourist.save_to_db()
         except:

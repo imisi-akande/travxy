@@ -1,7 +1,7 @@
 from travxy.db import db
 from sqlalchemy.sql import func
 
-class TouristExperienceModel(db.Model):
+class TourExperienceModel(db.Model):
     __tablename__ = 'tourist_experience'
     tourist_id = db.Column(db.Integer, primary_key=True)
     detail_id = db.Column(db.Integer, primary_key=True)
