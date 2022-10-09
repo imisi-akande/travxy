@@ -63,7 +63,6 @@ class TourExperienceList(Resource):
                                 TourExperienceModel.tourist_id.notin_(
                                 inactive_tourists_list)).filter(TourExperienceModel.tourist_id.in_(
                                 local_users_list)).all()
-        print(experience_instances, 'experience_instances')
         return {'tourists_experience':[experience_instance.with_time_updated_json()
                         for experience_instance in experience_instances]}, 200
 
