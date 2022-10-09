@@ -18,7 +18,6 @@ class DetailList(Resource):
         transportation = request.json.get('transportation', 'Air')
         travel_buddies = request.json.get('travel_buddies')
         estimated_cost = request.json.get('estimated_cost')
-
         if not all([place_id, departure, transportation, estimated_cost]):
             return {'message': 'Missing Fields required'}, 400
 
@@ -31,10 +30,11 @@ class DetailList(Resource):
             return {'message': 'This place does not exist'}, 400
 
         tourists = TouristInfoModel.query.join(UserModel).filter(
-                                    UserModel.email.in_(travel_buddies)).filter(
-                                    UserModel.isactive==True).all()
+                        UserModel.email.in_(travel_buddies)).filter(
+                        UserModel.isactive==True).filter(
+                        TouristInfoModel.nationality==detail_author.nationality).all()
         if len(tourists) != len(travel_buddies):
-            return {'message': 'All users must be registered tourists'}, 400
+            return {'message': 'All travel buddies must be registered tourists and must be based in the same location'}, 400
 
         if len(travel_buddies) > 0:
             detail = DetailModel(place_id=place_id, departure=departure,
@@ -62,7 +62,8 @@ class DetailList(Resource):
             return {'message': 'User is not a registered tourist'}, 401
 
         detail_instances = DetailModel.query.join(TouristInfoModel, UserModel
-                                    ).filter(UserModel.isactive==True).all()
+                                            ).filter(UserModel.isactive==True).filter(
+                                            TouristInfoModel.nationality==detail_author.nationality).all()
         details = [detail.with_tourist_json() for detail in detail_instances]
         return details
 
@@ -89,10 +90,12 @@ class Detail(Resource):
 
         tourists = TouristInfoModel.query.join(UserModel).filter(
                                     UserModel.email.in_(travel_buddies)
-                                    ).filter(UserModel.isactive==True).all()
+                                    ).filter(UserModel.isactive==True).filter(
+                                    TouristInfoModel.nationality==detail_author.nationality
+                                    ).all()
         if len(tourists) != len(travel_buddies):
             return {'message':
-                        'All travel buddies must be registered tourists'}, 400
+                        'All travel buddies must be registered tourists and must be based in the same location'}, 400
 
         if detail_author.user.email in travel_buddies:
             return {'message':

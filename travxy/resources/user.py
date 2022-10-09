@@ -141,13 +141,16 @@ class User(Resource):
     @jwt_required()
     def get(self, user_id):
         current_identity = get_jwt_identity()
-        tourist_user = TouristInfoModel.find_by_user_id(current_identity)
-        if tourist_user is None:
+        logged_in_user = TouristInfoModel.find_by_user_id(current_identity)
+        if logged_in_user is None:
             return {'message':
                         'You must register as a tourist to see other tourists'}, 401
         user = UserModel.find_by_id(user_id)
+        user_result = TouristInfoModel.find_by_user_id(user_id)
         if not user or user.isactive==False:
             return {'message': 'User not found'}, 404
+        if not user_result or logged_in_user.nationality != user_result.nationality:
+            return {'message': 'User does not exist'}, 400
         return user.username_json(), 200
 
     @jwt_required()
@@ -221,13 +224,16 @@ class UserList(Resource):
     @jwt_required()
     def get(self):
         current_identity = get_jwt_identity()
-        tourist_user = TouristInfoModel.find_by_user_id(current_identity)
-        if tourist_user is None:
+        logged_in_user = TouristInfoModel.find_by_user_id(current_identity)
+        if logged_in_user is None:
             return {'message':
                     'You must register as a tourist to view all other tourists'}, 400
-        users = {'users': [user.username_json()
-                            for user in UserModel.query.filter(
-                                UserModel.isactive==True).all()]}
+        logged_in_user_nationality = logged_in_user.nationality
+
+        users = {'users': [user.username_json() for user in UserModel.query.join(
+                TouristInfoModel).filter(
+                TouristInfoModel.nationality==logged_in_user_nationality).filter(
+                UserModel.isactive==True).all()]}
         return users, 200
 
 class TokenRefresh(Resource):

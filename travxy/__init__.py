@@ -17,10 +17,10 @@ from travxy.resources.tourist import (Tourist, TouristDetail, TouristList,
 from travxy.resources.detail import (DetailList, Detail, GetTouristDetail, 
                                        DetailSpecificToAccount)
 
-from travxy.resources.experience import (TouristExperienceList, 
-                                        TouristExperience, GetTouristExperience,
-                                        SearchTouristExperience, 
-                                        ExperienceSpecificToAccount)
+from travxy.resources.experience import (TourExperienceList, 
+                                        TourExperience, GetTourExperience,
+                                        SearchTourExperience, 
+                                        TourExperienceSpecificToAccount)
 from travxy.resources.role import RoleList
 
 from flask_migrate import Migrate
@@ -106,11 +106,11 @@ def create_app(config_class=DevelopmentConfig):
     api.add_resource(GetTouristDetail, '/tourist-detail/<int:tourist_id>/<int:detail_id>')
     api.add_resource(DetailSpecificToAccount, '/account/details')
 
-    api.add_resource(TouristExperienceList, '/tourists-experience')
-    api.add_resource(TouristExperience, '/tourist-experience')
-    api.add_resource(GetTouristExperience, '/tourist-experience/<int:tourist_id>/<int:detail_id>')
-    api.add_resource(SearchTouristExperience, '/tourist-experience/search/<search_term>')
-    api.add_resource(ExperienceSpecificToAccount, '/account/tourist-experience')
+    api.add_resource(TourExperienceList, '/tourists-experience')
+    api.add_resource(TourExperience, '/tourist-experience')
+    api.add_resource(GetTourExperience, '/tourist-experience/<int:tourist_id>/<int:detail_id>')
+    api.add_resource(SearchTourExperience, '/tourist-experience/search/<search_term>')
+    api.add_resource(TourExperienceSpecificToAccount, '/account/tourist-experience')
 
     api.add_resource(RoleList, '/roles')
 

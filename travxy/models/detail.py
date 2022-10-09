@@ -12,7 +12,7 @@ class DetailModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     departure = db.Column(db.String(80), nullable=False)
     transportation = db.Column(Enum("Air", "Road", "Rail", "Water",
-                                       name="transportation_types",
+                                       name="transportation_types", server_default="Air",
                                        nullable=False))
     travel_buddies_created_by = db.Column(db.Integer, db.ForeignKey(
                                             'tourists.id', ondelete="CASCADE"))
