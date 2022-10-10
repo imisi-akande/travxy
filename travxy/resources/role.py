@@ -14,5 +14,5 @@ class RoleList(Resource):
         if ((current_identity) and
                 (current_user.role_id == 1 or current_user.role_id == 2)):
             roles = [role.json() for role in role_instance]
-            return roles
+            return roles, 200
         return {'message': 'Unauthorized User'}, 401

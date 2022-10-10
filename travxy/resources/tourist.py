@@ -83,7 +83,7 @@ class TouristDetail(Resource):
         travel_buddies = request.json.get('travel_buddies')
         estimated_cost = request.json.get('estimated_cost')
 
-        if not all([place_id, departure, estimated_cost]):
+        if not all([place_id, departure, transportation, estimated_cost]):
             return {'message': 'Missing Fields required'}, 400
         if detail_author.user.email in travel_buddies:
             return {'message':
