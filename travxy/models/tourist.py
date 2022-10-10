@@ -24,6 +24,9 @@ class TouristInfoModel(db.Model):
     details_info = db.relationship(
             "DetailModel", secondary=tourist_detail, viewonly=True)
 
+    app_experiences = db.relationship('ApplicationExperienceModel', back_populates='tourist',
+                                lazy='dynamic')
+
     def json(self):
         return {'tourist_id': self.id, 'nationality': self.nationality,
                 'gender': self.gender}

@@ -1,4 +1,4 @@
-INSERT INTO tourist_experience (tourist_id, detail_id, comment, rating, duration, time_created, time_updated) VALUES
+INSERT INTO tour_experience (tourist_id, detail_id, comment, rating, duration, time_created, time_updated) VALUES
 (1, 1, 'Very beautiful scenes around', 4, 5000, '2022-03-27 19:03:30', NULL),
 (3, 1, 'Beautiful island', 2, 150000, '2022-07-27 19:03:30', NULL),
 (3, 2, 'Good place', 1, 130000, '2022-07-27 19:03:30', NULL),

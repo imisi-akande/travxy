@@ -7,6 +7,9 @@ from sqlalchemy.orm import close_all_sessions
 from travxy.models.tourist import TouristInfoModel
 from travxy.models.user import UserModel
 from travxy.models.role import RoleModel
+from travxy.models.detail import DetailModel
+from travxy.models.place import PlaceModel
+
 
 from flask_jwt_extended import create_access_token, create_refresh_token
 from travxy.config import TestingConfig
@@ -151,4 +154,50 @@ def create_admin_jwt_token(create_admin):
         if not admin_user:
             admin_user = create_admin()
         return admin_user, create_access_token(identity=admin_user.id, fresh=True)
+    return _
+
+@pytest.fixture
+def create_place():
+    def _(place_details=None):
+        if not place_details:
+            place_details = {"name": "Hollywood",
+                            "location": "Los Angeles",
+                            "country": "United States of America",
+                            "about": "Sight different people"}
+
+        place = PlaceModel(**place_details)
+        place.save_to_db()
+        return place
+    return _
+
+@pytest.fixture
+def create_detail(create_user, create_tourist, create_place):
+    def _(user=None, place=None, place_details=None):
+        if not user:
+            users = [create_user({
+                "last_name": "Test",
+                "first_name": "User",
+                "username": f"test_user{i}",
+                "email": f"test_user{i}@gmail.com",
+                "password": "password"
+                }) for i in range(3)]
+        for usr in users:
+            create_tourist(user=usr)
+        travel_buddies = ["test_user0@gmail.com", "test_user1@gmail.com", "test_user2@gmail.com"]
+        tourists = TouristInfoModel.query.join(UserModel).filter(
+                                    UserModel.email.in_(travel_buddies)).all()
+        if not place:
+            place = create_place()
+
+        if not place_details:
+            place_details = {"place_id": place.id,
+                            "departure": "Austria",
+                            "transportation": "Air",
+                            "travel_buddies_created_by": 1,
+                            "estimated_cost": 2500}
+        detail = DetailModel(**place_details)
+        for tourist in tourists:
+            tourist.place_details_of_tourists.append(detail)
+            tourist.save_to_db()
+        return tourist
     return _

@@ -629,8 +629,8 @@ def test_admin_delete_another_admin(client, create_admin_jwt_token, create_user)
     users = create_user({
                 "last_name": "Test",
                 "first_name": "User",
-                "username": f"test_user",
-                "email": f"test_user@gmail.com",
+                "username": "test_user",
+                "email": "test_user@gmail.com",
                 "password": "password",
                 "role_id": 2
             })

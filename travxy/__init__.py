@@ -21,12 +21,15 @@ from travxy.resources.experience import (TourExperienceList,
                                         TourExperience, GetTourExperience,
                                         SearchTourExperience, 
                                         TourExperienceSpecificToAccount)
+
+from travxy.resources.remarks import (Remarks, SpecificRemarks, EditRemarks)
 from travxy.resources.role import RoleList
 
 from flask_migrate import Migrate
 from travxy.blocklist import BLOCKLIST
 from travxy.config import DevelopmentConfig
-from travxy.models import category, detail, experience, role, place, tourist, user
+from travxy.models import (category, detail, experience, role, place, tourist,
+                            user, remarks)
 
 
 migrate = Migrate()
@@ -113,6 +116,12 @@ def create_app(config_class=DevelopmentConfig):
     api.add_resource(TourExperienceSpecificToAccount, '/account/tourist-experience')
 
     api.add_resource(RoleList, '/roles')
+
+    api.add_resource(Remarks, '/remarks')
+
+    api.add_resource(SpecificRemarks, '/remarks/<int:tourist_id>')
+
+    api.add_resource(EditRemarks, '/remarks/<int:id>')
 
     return app
 
